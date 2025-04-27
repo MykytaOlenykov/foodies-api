@@ -11,6 +11,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 1s
+    networks:
+      - foodies_postgres_network
     env_file:
       - .env
     volumes:
@@ -20,6 +22,7 @@ services:
     container_name: foodies-api
     restart: always
     networks:
+      - foodies_postgres_network
       - shared_nginx_web_network
     depends_on:
       foodies-postgres:
@@ -33,5 +36,7 @@ services:
       dockerfile: prod.Dockerfile
 
 networks:
+  foodies_postgres_network:
+    driver: bridge
   shared_nginx_web_network:
     external: true
