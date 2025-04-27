@@ -9,9 +9,6 @@ export const sequelize = new Sequelize({
   host: settings.dbHost,
   database: settings.dbName,
   port: settings.dbPort,
-  dialectOptions: {
-    ssl: true,
-  },
 });
 
 export const verifySequelizeConnection = async () => {
