@@ -20,11 +20,11 @@ export const authenticate = async (req, _, next) => {
 
     // const user = await User.findOne({ where: { id } });
 
-    if (!user || !user.token || user.token !== token) {
-      throw HttpError(401);
-    }
+    // if (!user || !user.token || user.token !== token) {
+    //   throw HttpError(401);
+    // }
 
-    req.user = user;
+    // req.user = user;
 
     next();
   } catch (error) {
