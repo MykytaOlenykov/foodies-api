@@ -3,6 +3,7 @@ import morgan from "morgan";
 import cors from "cors";
 
 import { areasRouter } from "./routes/areasRouter.js";
+import { authRouter } from "./routes/authRouter.js";
 import { categoriesRouter } from "./routes/categoriesRouter.js";
 import { ingredientsRouter } from "./routes/ingredientsRouter.js";
 import { recipesRouter } from "./routes/recipesRouter.js";
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 app.use("/api/areas", areasRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/ingredients", ingredientsRouter);
 app.use("/api/recipes", recipesRouter);
