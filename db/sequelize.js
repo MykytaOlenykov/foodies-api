@@ -46,4 +46,13 @@ Recipe.associate(sequelize);
 Testimonial.associate(sequelize);
 User.associate(sequelize);
 
-export { sequelize, Area, Category, Ingredient, Recipe, User };
+export {
+  sequelize,
+  Area,
+  Category,
+  Ingredient,
+  Recipe,
+  Testimonial,
+  User,
+  RecipeIngredient,
+};

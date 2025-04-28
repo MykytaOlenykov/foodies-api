@@ -30,7 +30,7 @@ export class Recipe extends Model {
           allowNull: false,
         },
         description: {
-          type: DataTypes.STRING,
+          type: DataTypes.TEXT,
           allowNull: false,
         },
         thumb: {
@@ -81,6 +81,11 @@ export class Recipe extends Model {
       foreignKey: "recipeId",
       as: "ingredients",
       otherKey: "ingredientId",
+    });
+
+    Recipe.hasMany(RecipeIngredient, {
+      foreignKey: "recipeId",
+      as: "recipeIngredients",
     });
 
     Recipe.belongsToMany(User, {

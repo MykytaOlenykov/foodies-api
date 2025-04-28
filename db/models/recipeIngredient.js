@@ -20,11 +20,15 @@ export class RecipeIngredient extends Model {
           },
           allowNull: false,
         },
+        measure: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
       },
       {
         sequelize,
         modelName: "RecipeIngredient",
-        tableName: "recipeIngredient",
+        tableName: "recipeIngredients",
         timestamps: false,
       }
     );

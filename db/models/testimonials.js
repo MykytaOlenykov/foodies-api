@@ -10,7 +10,7 @@ export class Testimonial extends Model {
           primaryKey: true,
         },
         testimonial: {
-          type: DataTypes.STRING,
+          type: DataTypes.TEXT,
           allowNull: false,
         },
         ownerId: {
