@@ -1,0 +1,5 @@
+{
+  "watch": ["."],
+  "ignore": ["node_modules", "volumes", "temp", "public"],
+  "ext": "js,json"
+}
