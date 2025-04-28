@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-app.get(settings.apiRoutePrefix + "/ok", (_, res) => {
+app.get("/api/ok", (_, res) => {
   res.status(200).json({ message: "ok" });
 });
 
