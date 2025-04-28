@@ -1,5 +1,6 @@
 import { jwt } from "../helpers/jwt.js";
 import { HttpError } from "../helpers/HttpError.js";
+import { User } from "../db/sequelize.js";
 
 export const authenticate = async (req, _, next) => {
   try {
@@ -16,15 +17,13 @@ export const authenticate = async (req, _, next) => {
       throw HttpError(401);
     }
 
-    // TODO:
+    const user = await User.findOne({ where: { id } });
 
-    // const user = await User.findOne({ where: { id } });
+    if (!user || !user.token || user.token !== token) {
+      throw HttpError(401);
+    }
 
-    // if (!user || !user.token || user.token !== token) {
-    //   throw HttpError(401);
-    // }
-
-    // req.user = user;
+    req.user = user;
 
     next();
   } catch (error) {
