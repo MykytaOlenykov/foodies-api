@@ -17,7 +17,7 @@ export const authenticate = async (req, _, next) => {
       throw HttpError(401);
     }
 
-    const user = await User.findOne({ where: { id } });
+    const user = await User.findByPk(id);
 
     if (!user || !user.token || user.token !== token) {
       throw HttpError(401);
