@@ -145,6 +145,7 @@ const getFollowing = async (userId) => {
       },
     ],
   });
+
   if (!user) {
     throw HttpError(404, "User not found");
   }
