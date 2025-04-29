@@ -11,6 +11,39 @@ const getUserById = async (req, res) => {
   });
 };
 
+import { HttpError } from "../helpers/HttpError.js";
+
+const updateAvatar = async (req, res) => {
+  const { id: userId } = req.user;
+
+  if (!req.file) {
+    throw HttpError(400, "No file uploaded");
+  }
+
+  const { avatarURL } = await usersServices.updateUserAvatar(userId, req.file);
+
+  res.status(200).json({ data: { avatarURL } });
+};
+
+const getFollowers = async (req, res) => {
+  const { id: userId } = req.user;
+
+  const followers = await usersServices.getFollowers(userId);
+
+  res.status(200).json({ data: { followers } });
+};
+
+const getFollowing = async (req, res) => {
+  const { id: userId } = req.user;
+
+  const following = await usersServices.getFollowing(userId);
+
+  res.status(200).json({ data: { following } });
+};
+
 export const usersControllers = {
   getUserById: ctrlWrapper(getUserById),
+  updateAvatar: ctrlWrapper(updateAvatar),
+  getFollowers: ctrlWrapper(getFollowers),
+  getFollowing: ctrlWrapper(getFollowing),
 };
