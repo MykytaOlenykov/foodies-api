@@ -28,8 +28,14 @@ const currentUser = (req, res) => {
   });
 };
 
+const logout = async (req, res) => {
+  await authServices.logout(req.user);
+  res.status(204).send();
+};
+
 export const authControllers = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   currentUser: ctrlWrapper(currentUser),
+  logout: ctrlWrapper(logout),
 };
