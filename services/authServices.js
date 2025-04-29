@@ -42,7 +42,7 @@ const login = async (body) => {
     id: user.id,
   };
 
-  const token = jwt.sign(payload);
+  const token = jwt.sign(payload, { expiresIn: "9h" });
 
   user.token = token;
   await user.save();

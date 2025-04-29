@@ -40,7 +40,7 @@ const getUserById = async (userId, user) => {
         ]
       : [];
 
-  const userInfo = await User.findByPk(userId, {
+  const userInstance = await User.findByPk(userId, {
     include: [
       {
         model: Recipe,
@@ -79,9 +79,9 @@ const getUserById = async (userId, user) => {
     group: ["User.id"],
   });
 
-  if (!userInfo) throw HttpError(404, "User not found");
+  if (!userInstance) throw HttpError(404, "User not found");
 
-  const userJson = userInfo.toJSON();
+  const userJson = userInstance.toJSON();
 
   return {
     ...userJson,
