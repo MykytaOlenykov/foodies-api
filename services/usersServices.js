@@ -1,9 +1,7 @@
 import { HttpError } from "../helpers/HttpError.js";
 import { sequelize, User, Recipe } from "../db/sequelize.js";
 
-const getUserById = async (id, user) => {
-  const userId = Number(id);
-
+const getUserById = async (userId, user) => {
   const privateAttributes =
     userId === user.id
       ? [
