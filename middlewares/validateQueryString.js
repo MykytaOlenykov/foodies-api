@@ -11,8 +11,6 @@ export const validateQueryString = (schema) => {
       next(HttpError(400, error.message));
     }
 
-    req.query = value;
-
     next();
   };
 
