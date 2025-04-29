@@ -17,7 +17,7 @@ const app = express();
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
+app.use("/api/static", express.static("public"));
 
 app.use("/api/areas", areasRouter);
 app.use("/api/auth", authRouter);
