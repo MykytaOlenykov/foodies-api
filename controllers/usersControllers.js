@@ -20,16 +20,9 @@ const updateAvatar = async (req, res) => {
     throw HttpError(400, "No file uploaded");
   }
 
-  const updatedUser = await usersServices.updateUserAvatar(userId, req.file);
+  const { avatarURL } = await usersServices.updateUserAvatar(userId, req.file);
 
-  res.json({
-    status: "success",
-    code: 200,
-    data: {
-      email: updatedUser.email,
-      avatarURL: updatedUser.avatarURL,
-    },
-  });
+  res.status(200).json({ data: { avatarURL } });
 };
 
 const getCurrentFollowers = async (req, res) => {
@@ -37,7 +30,7 @@ const getCurrentFollowers = async (req, res) => {
 
   const followers = await usersServices.getUserFollowers(userId);
 
-  res.status(200).json(followers);
+  res.status(200).json({ data: { followers } });
 };
 
 const getFollowing = async (req, res) => {
@@ -45,7 +38,7 @@ const getFollowing = async (req, res) => {
 
   const following = await usersServices.getFollowing(userId);
 
-  res.status(200).json(following);
+  res.status(200).json({ data: { following } });
 };
 
 export const usersControllers = {

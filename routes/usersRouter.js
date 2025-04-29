@@ -24,13 +24,9 @@ usersRouter.patch(
 );
 
 usersRouter.get(
-  "/current/followers",
+  "/followers",
   authenticate,
   usersControllers.getCurrentFollowers
 );
 
-usersRouter.get(
-  "/current/following",
-  authenticate,
-  usersControllers.getFollowing
-);
+usersRouter.get("/following", authenticate, usersControllers.getFollowing);
