@@ -16,7 +16,7 @@ usersRouter.get(
 );
 
 usersRouter.get(
-  "/:Id",
+  "/:id",
   authenticate,
   usersControllers.getUserDetailInfoController
 );

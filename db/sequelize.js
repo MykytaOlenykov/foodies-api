@@ -55,4 +55,6 @@ export {
   Testimonial,
   User,
   RecipeIngredient,
+  UserFavoriteRecipe,
+  UserFollower,
 };

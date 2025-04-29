@@ -1,14 +1,10 @@
 import { verifySecret, hashSecret } from "../helpers/hashing.js";
 import { HttpError } from "../helpers/HttpError.js";
 import { jwt } from "../helpers/jwt.js";
-import { User } from "../db/models/users.js";
-import { sequelize } from "../db/sequelize.js";
-import { Recipe } from "../db/models/recipes.js";
-import { UserFavoriteRecipe } from "../db/models/userFavoriteRecipes.js";
-import { UserFollower } from "../db/models/userFollowers.js";
+import { sequelize, User, Recipe } from "../db/sequelize.js";
 
-const registerUser = async (req) => {
-  const { name, email, password } = req.body;
+const registerUser = async (body) => {
+  const { name, email, password } = body;
 
   const user = await User.findOne({ where: { email } });
 
@@ -24,11 +20,11 @@ const registerUser = async (req) => {
     password: hashPassword,
   });
 
-  return newUser;
+  return { id: newUser.id, name: newUser.name, email: newUser.email };
 };
 
-const loginUser = async (req) => {
-  const { email, password } = req.body;
+const loginUser = async (body) => {
+  const { email, password } = body;
 
   const user = await User.findOne({ where: { email } });
 
@@ -44,7 +40,6 @@ const loginUser = async (req) => {
 
   const payload = {
     id: user.id,
-    email,
   };
 
   const token = jwt.sign(payload);
@@ -54,50 +49,114 @@ const loginUser = async (req) => {
 
   return {
     token,
-    user,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatarURL: user.avatarURL,
+    },
   };
 };
 
-const getUserDetailInfo = async (req) => {
-  const { userId } = req.params;
+const getUserById = async (id, user) => {
+  const userId = Number(id);
 
-  const user = await User.findByPk(userId, {
-    attributes: ["id", "name", "email", "avatarURL"],
+  const privateAttributes =
+    userId === user.id
+      ? [
+          [
+            sequelize.fn(
+              "COUNT",
+              sequelize.fn("DISTINCT", sequelize.col("favoriteRecipes.id"))
+            ),
+            "favoriteRecipesCount",
+          ],
+          [
+            sequelize.fn(
+              "COUNT",
+              sequelize.fn("DISTINCT", sequelize.col("following.id"))
+            ),
+            "followingCount",
+          ],
+        ]
+      : [];
+
+  const privateInclude =
+    userId === user.id
+      ? [
+          {
+            model: Recipe,
+            as: "favoriteRecipes",
+            through: { attributes: [] },
+            attributes: [],
+          },
+          {
+            model: User,
+            as: "following",
+            through: { attributes: [] },
+            attributes: [],
+          },
+        ]
+      : [];
+
+  const userInfo = await User.findByPk(userId, {
+    include: [
+      {
+        model: Recipe,
+        as: "recipes",
+        attributes: [],
+      },
+      {
+        model: User,
+        as: "followers",
+        through: { attributes: [] },
+        attributes: [],
+      },
+      ...privateInclude,
+    ],
+    attributes: [
+      "id",
+      "name",
+      "email",
+      "avatarURL",
+      [
+        sequelize.fn(
+          "COUNT",
+          sequelize.fn("DISTINCT", sequelize.col("recipes.id"))
+        ),
+        "recipesCount",
+      ],
+      [
+        sequelize.fn(
+          "COUNT",
+          sequelize.fn("DISTINCT", sequelize.col("followers.id"))
+        ),
+        "followersCount",
+      ],
+      ...privateAttributes,
+    ],
+    group: ["User.id"],
   });
 
-  if (!user) {
-    throw HttpError(404, "User not found");
-  }
+  if (!userInfo) throw HttpError(404, "User not found");
 
-  const createdRecipesCount = await Recipe.count({
-    where: { ownerId: user.id },
-  });
-
-  const favoriteRecipesCount = await UserFavoriteRecipe.count({
-    where: { userId: id },
-  });
-
-  const followersCount = await UserFollower.count({
-    where: { userId: user.id },
-  });
-
-  const followingCount = await UserFollower.count({
-    where: { followerId: id },
-  });
+  const userJson = userInfo.toJSON();
 
   return {
-    email,
-    name,
-    avatarURL,
-    createdRecipesCount,
-    favoriteRecipesCount,
-    followersCount,
-    followingCount,
+    ...userJson,
+    recipesCount: Number(userJson.recipesCount),
+    followersCount: Number(userJson.followersCount),
+    favoriteRecipesCount: userJson.favoriteRecipesCount
+      ? Number(userJson.favoriteRecipesCount)
+      : undefined,
+    followingCount: userJson.followingCount
+      ? Number(userJson.followingCount)
+      : undefined,
   };
 };
 
 export const usersServices = {
   registerUser,
   loginUser,
-  getUserDetailInfo,
+  getUserById,
 };
