@@ -63,5 +63,10 @@ export class User extends Model {
       foreignKey: "userId",
       otherKey: "recipeId",
     });
+
+    User.hasMany(Recipe, {
+      as: "recipes",
+      foreignKey: "ownerId",
+    });
   }
 }
