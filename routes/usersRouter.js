@@ -10,19 +10,13 @@ usersRouter.post("/register", usersControllers.registerController);
 usersRouter.post("/login", usersControllers.loginController);
 
 usersRouter.get(
-  "/currentUserInfo",
+  "/current",
   authenticate,
   usersControllers.getAuthorizedUserInfoController
 );
 
 usersRouter.get(
-  "/currentUserDetailInfo",
-  authenticate,
-  usersControllers.getAuthorizedUserDetailInfoController
-);
-
-usersRouter.get(
-  "/userDetailInfo/:userId",
+  "/userDetailInfo/:Id",
   authenticate,
   usersControllers.getUserDetailInfoController
 );

@@ -27,14 +27,6 @@ const getAuthorizedUserInfoController = (req, res) => {
   });
 };
 
-const getAuthorizedUserDetailInfoController = async (req, res) => {
-  const user = await usersServices.getAuthorizedUserDetailInfo(req);
-
-  res.status(200).json({
-    data: { user },
-  });
-};
-
 const getUserDetailInfoController = async (req, res) => {
   const user = await usersServices.getUserDetailInfo(req);
 
@@ -47,8 +39,5 @@ export const usersControllers = {
   registerController: ctrlWrapper(registerController),
   loginController: ctrlWrapper(loginController),
   getAuthorizedUserInfoController: ctrlWrapper(getAuthorizedUserInfoController),
-  getAuthorizedUserDetailInfoController: ctrlWrapper(
-    getAuthorizedUserDetailInfoController
-  ),
   getUserDetailInfoController: ctrlWrapper(getUserDetailInfoController),
 };

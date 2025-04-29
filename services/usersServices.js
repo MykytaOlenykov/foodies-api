@@ -18,24 +18,13 @@ const registerUser = async (req) => {
 
   const hashPassword = await hashSecret(password, 10);
 
-  const transaction = await sequelize.transaction();
+  const newUser = await User.create({
+    name,
+    email,
+    password: hashPassword,
+  });
 
-  try {
-    const newUser = await User.create(
-      {
-        name,
-        email,
-        password: hashPassword,
-      },
-      { transaction }
-    );
-
-    await transaction.commit();
-    return newUser;
-  } catch (error) {
-    await transaction.rollback();
-    throw error;
-  }
+  return newUser;
 };
 
 const loginUser = async (req) => {
@@ -60,41 +49,12 @@ const loginUser = async (req) => {
 
   const token = jwt.sign(payload);
 
-  try {
-    user.token = token;
-    await user.save();
-  } catch (error) {
-    throw error;
-  }
+  user.token = token;
+  await user.save();
 
   return {
     token,
     user,
-  };
-};
-
-const getAuthorizedUserDetailInfo = async (req) => {
-  const { id, email, name, avatarURL } = req.user;
-
-  const createdRecipesCount = await Recipe.count({ where: { ownerId: id } });
-  const favoriteRecipesCount = await UserFavoriteRecipe.count({
-    where: { userId: id },
-  });
-  const followersCount = await UserFollower.count({
-    where: { userId: id },
-  });
-  const followingCount = await UserFollower.count({
-    where: { followerId: id },
-  });
-
-  return {
-    email,
-    name,
-    avatarURL,
-    createdRecipesCount,
-    favoriteRecipesCount,
-    followersCount,
-    followingCount,
   };
 };
 
@@ -112,22 +72,32 @@ const getUserDetailInfo = async (req) => {
   const createdRecipesCount = await Recipe.count({
     where: { ownerId: user.id },
   });
+
+  const favoriteRecipesCount = await UserFavoriteRecipe.count({
+    where: { userId: id },
+  });
+
   const followersCount = await UserFollower.count({
     where: { userId: user.id },
   });
 
+  const followingCount = await UserFollower.count({
+    where: { followerId: id },
+  });
+
   return {
-    avatarURL: user.avatarURL,
-    name: user.name,
-    email: user.email,
+    email,
+    name,
+    avatarURL,
     createdRecipesCount,
+    favoriteRecipesCount,
     followersCount,
+    followingCount,
   };
 };
 
 export const usersServices = {
   registerUser,
   loginUser,
-  getAuthorizedUserDetailInfo,
   getUserDetailInfo,
 };
