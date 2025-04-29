@@ -1,11 +1,11 @@
 import express from "express";
 
-import { recipesControllers } from "../controllers/recipesControllers.js";
+import { recipesController } from "../controllers/recipesControllers.js";
 
 export const recipesRouter = express.Router();
 
-recipesRouter.get("/", recipesControllers.getFilteredRecipesController);
+recipesRouter.get("/", recipesController.getFilteredRecipesController);
 
-recipesRouter.get("/popular", recipesControllers.getPopularRecipesController);
+recipesRouter.get("/popular", recipesController.getPopularRecipesController);
 
-recipesRouter.get("/:id", recipesControllers.getRecipeByIdController);
+recipesRouter.get("/:id", recipesController.getRecipeByIdController);

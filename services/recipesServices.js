@@ -2,21 +2,22 @@ import { Sequelize } from "sequelize";
 import { Recipe } from "../db/models/recipes.js";
 
 
+
 /**
- * Получает список рецептов с фильтрацией, сортировкой и пагинацией.
- * Может сортировать по популярности, если передан флаг `popular: true`.
- * 
- * @param {Object} options - Параметры запроса
- * @param {number} [options.category] - ID категории рецепта
- * @param {string} [options.ingredient] - Название ингредиента для фильтрации
- * @param {number} [options.area] - ID региона происхождения
- * @param {number} [options.page=1] - Номер страницы для пагинации
- * @param {number} [options.limit=10] - Количество рецептов на страницу
- * @param {string} [options.sort] - Сортировка, например 'title_ASC' или 'time_DESC'
- * @param {boolean} [options.popular=false] - Если true, сортировка по количеству фанатов
- * 
- * @returns {Object} Результат с массивом рецептов, количеством страниц и текущей страницей
- */
+* Gets a list of recipes with filtering, sorting and pagination.
+* Can sort by popularity if `popular: true` flag is passed.
+*
+* @param {Object} options - Query parameters
+* @param {number} [options.category] - Recipe category ID
+* @param {string} [options.ingredient] - Ingredient name to filter
+* @param {number} [options.area] - Origin region ID
+* @param {number} [options.page=1] - Page number for pagination
+* @param {number} [options.limit=10] - Number of recipes per page
+* @param {string} [options.sort] - Sort by, such as 'title_ASC' or 'time_DESC'
+* @param {boolean} [options.popular=false] - If true, sort by number of fans
+*
+* @returns {Object} Result with array of recipes, number of pages, and current page
+*/
 
 const getRecipes = async ({ category, ingredient, area, page, limit, sort, popular = false }) => {
   const where = {};
@@ -114,13 +115,13 @@ const getRecipes = async ({ category, ingredient, area, page, limit, sort, popul
 
 
 /**
- * Получает один рецепт по условию поиска.
- * Возвращает ингредиенты и фанатов рецепта.
- * 
- * @param {Object} query - Условие поиска (например, { id: 1 })
- * @returns {Object|null} Найденный рецепт или null
- */
-const getOneRecip = (query) => {
+* Gets a single recipe by search term.
+* Returns the recipe's ingredients and fans.
+*
+* @param {Object} query - The search term (e.g. { id: 1 })
+* @returns {Object|null} The recipe found or null
+*/
+const getOneRecipe = (query) => {
   return Recipe.findOne({
     where: query,
     include: [
@@ -141,21 +142,21 @@ const getOneRecip = (query) => {
 
 
 /**
- * Получает список популярных рецептов по количеству фанатов.
- * Работает через `getRecipes` с флагом `popular: true`.
- * 
- * @param {Object} options - Параметры пагинации
- * @param {number} [options.page=1] - Номер страницы
- * @param {number} [options.limit=10] - Количество рецептов на страницу
- * 
- * @returns {Object} Результат с популярными рецептами
- */
-const getPopularRecips = async ({ page, limit }) => {
+* Gets a list of popular recipes by number of fans.
+* Works via `getRecipes` with the `popular: true` flag.
+*
+* @param {Object} options - Pagination options
+* @param {number} [options.page=1] - Page number
+* @param {number} [options.limit=10] - Number of recipes per page
+*
+* @returns {Object} Result with popular recipes
+*/
+const getPopularRecipes = async ({ page, limit }) => {
   return await getRecipes({ page, limit, popular: true });
 };
 
 export const recipesServices = {
   getRecipes,
-  getOneRecip,
-  getPopularRecips,
+  getOneRecipe,
+  getPopularRecipes,
 };

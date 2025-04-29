@@ -10,7 +10,7 @@ const getFilteredRecipesController = async (req, res) => {
 
 const getRecipeByIdController = async (req, res) => {
   const { id } = req.params;
-  const data = await recipesServices.getOneRecip({ id });
+  const data = await recipesServices.getOneRecipe({ id });
 
   if (!data) {
     throw HttpError(404, "Recipe not found");
@@ -21,11 +21,11 @@ const getRecipeByIdController = async (req, res) => {
 
 const getPopularRecipesController = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
-  const data = await recipesServices.getPopularRecips({ page, limit });
+  const data = await recipesServices.getPopularRecipes({ page, limit });
   res.json(data);
 };
 
-export const recipesControllers = {
+export const recipesController = {
   getFilteredRecipesController: ctrlWrapper(getFilteredRecipesController),
   getRecipeByIdController: ctrlWrapper(getRecipeByIdController),
   getPopularRecipesController: ctrlWrapper(getPopularRecipesController),
