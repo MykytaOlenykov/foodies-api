@@ -1,8 +1,8 @@
 import { verifySecret, hashSecret } from "../helpers/hashing.js";
 import { HttpError } from "../helpers/HttpError.js";
+import { jwt } from "../helpers/jwt.js";
 import { User } from "../db/models/users.js";
 import { sequelize } from "../db/sequelize.js";
-import { jwt } from "../helpers/jwt.js";
 import { Recipe } from "../db/models/recipes.js";
 import { UserFavoriteRecipe } from "../db/models/userFavoriteRecipes.js";
 import { UserFollower } from "../db/models/userFollowers.js";

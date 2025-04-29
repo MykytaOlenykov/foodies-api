@@ -6,12 +6,15 @@ import { authenticate } from "../middlewares/authenticate.js";
 export const usersRouter = express.Router();
 
 usersRouter.post("/register", usersControllers.registerController);
+
 usersRouter.post("/login", usersControllers.loginController);
+
 usersRouter.get(
   "/currentUserInfo",
   authenticate,
   usersControllers.getAuthorizedUserInfoController
 );
+
 usersRouter.get(
   "/currentUserDetailInfo",
   authenticate,
