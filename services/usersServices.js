@@ -6,38 +6,35 @@ import { sequelize } from "../db/sequelize.js";
 import { Recipe } from "../db/models/recipes.js";
 import { UserFavoriteRecipe } from "../db/models/userFavoriteRecipes.js";
 import { UserFollower } from "../db/models/userFollowers.js";
+
 const registerUser = async (req) => {
   const { name, email, password } = req.body;
 
   const user = await User.findOne({ where: { email } });
 
   if (user) {
-    res.status(200).json({
-      message: "This email address is already registered!",
-    });
+    throw HttpError(409, "Email in use");
   }
 
-  if (!user) {
-    const hashPassword = await hashSecret(password, 10);
+  const hashPassword = await hashSecret(password, 10);
 
-    const transaction = await sequelize.transaction();
+  const transaction = await sequelize.transaction();
 
-    try {
-      const newUser = await User.create(
-        {
-          name,
-          email,
-          password: hashPassword,
-        },
-        { transaction }
-      );
+  try {
+    const newUser = await User.create(
+      {
+        name,
+        email,
+        password: hashPassword,
+      },
+      { transaction }
+    );
 
-      await transaction.commit();
-      return newUser;
-    } catch (error) {
-      await transaction.rollback();
-      throw error;
-    }
+    await transaction.commit();
+    return newUser;
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
   }
 };
 
@@ -51,6 +48,7 @@ const loginUser = async (req) => {
   }
 
   const passwordCompare = await verifySecret(password, user.password);
+
   if (!passwordCompare) {
     throw HttpError(401, "Email or password invalid");
   }
@@ -61,13 +59,11 @@ const loginUser = async (req) => {
   };
 
   const token = jwt.sign(payload);
-  const transaction = await sequelize.transaction();
+
   try {
     user.token = token;
-    await user.save({ transaction });
-    await transaction.commit();
+    await user.save();
   } catch (error) {
-    await transaction.rollback();
     throw error;
   }
 
@@ -110,7 +106,7 @@ const getUserDetailInfo = async (req) => {
   });
 
   if (!user) {
-    return res.status(404).json({ message: "User not found" });
+    throw HttpError(404, "User not found");
   }
 
   const createdRecipesCount = await Recipe.count({

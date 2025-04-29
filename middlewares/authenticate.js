@@ -12,7 +12,7 @@ export const authenticate = async (req, _, next) => {
     }
 
     const { id } = jwt.verify(token);
-    console.log("id", id);
+
     if (!id) {
       throw HttpError(401);
     }

@@ -32,7 +32,7 @@ const getAuthorizedUserDetailInfoController = async (req, res) => {
   const data = await usersServices.getAuthorizedUserDetailInfo(req);
 
   res.json({
-    ...data,
+    data,
   });
 };
 
@@ -40,7 +40,7 @@ const getUserDetailInfoController = async (req, res) => {
   const data = await usersServices.getUserDetailInfo(req);
 
   res.json({
-    ...data,
+    data,
   });
 };
 
