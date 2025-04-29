@@ -18,7 +18,7 @@ import { Recipe } from "../db/models/recipes.js";
  * @returns {Object} Результат с массивом рецептов, количеством страниц и текущей страницей
  */
 
-const getRecipes = async ({ category, ingredient, area, page = 1, limit = 10, sort, popular = false }) => {
+const getRecipes = async ({ category, ingredient, area, page, limit, sort, popular = false }) => {
   const where = {};
   if (category) where.categoryId = category;
   if (area) where.areaId = area;
@@ -150,7 +150,7 @@ const getOneRecip = (query) => {
  * 
  * @returns {Object} Результат с популярными рецептами
  */
-const getPopularRecips = async ({ page = 1, limit = 10 }) => {
+const getPopularRecips = async ({ page, limit }) => {
   return await getRecipes({ page, limit, popular: true });
 };
 
