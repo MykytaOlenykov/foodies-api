@@ -1,4 +1,4 @@
-import Ingredient from "../db/models/ingredients.js";
+import { Ingredient } from "../db/models/ingredients.js";
 
 export const listIngredients = async (filter = {}, pagination = {}) => {
   const { page = 1, limit = 10 } = pagination;

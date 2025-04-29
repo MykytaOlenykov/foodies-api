@@ -1,4 +1,4 @@
-import Area from "../db/models/areas.js";
+import { Area } from "../db/models/areas.js";
 
 export const listAreas = async (filter = {}, pagination = {}) => {
   const { page = 1, limit = 10 } = pagination;

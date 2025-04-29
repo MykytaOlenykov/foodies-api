@@ -42,5 +42,3 @@ export class Ingredient extends Model {
     });
   }
 }
-
-export default Ingredient;

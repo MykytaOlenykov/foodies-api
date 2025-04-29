@@ -1,5 +1,5 @@
-import Testimonial from "../db/models/testimonials.js";
-import User from "../db/models/users.js"; // to join with owner.name
+import { Testimonial } from "../db/models/testimonials.js";
+import { User } from "../db/models/users.js"; // to join with owner.name
 
 export const getAll = async (search = {}) => {
   const {

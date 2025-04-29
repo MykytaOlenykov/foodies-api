@@ -36,5 +36,3 @@ export class Testimonial extends Model {
     });
   }
 }
-
-export default Testimonial;

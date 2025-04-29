@@ -1,4 +1,4 @@
-import Category from "../db/models/categories.js";
+import { Category } from "../db/models/categories.js";
 
 export const listCategories = async (pagination = {}) => {
   const { page = 1, limit = 10 } = pagination;
