@@ -1,5 +1,6 @@
 import { HttpError } from "../helpers/HttpError.js";
 import { sequelize, User, Recipe } from "../db/sequelize.js";
+import { filesServices } from "./filesServices.js";
 
 const getUserById = async (userId, user) => {
   const privateAttributes =
@@ -96,6 +97,64 @@ const getUserById = async (userId, user) => {
   };
 };
 
+const updateUserAvatar = async (userId, file) => {
+  const user = await User.findByPk(userId);
+
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+
+  const avatarURL = await filesServices.processAvatar(file);
+
+  if (user.avatarURL) {
+    await filesServices.removeFile(user.avatarURL);
+  }
+
+  await user.update({ avatarURL: avatarURL });
+
+  return user;
+};
+
+const getUserFollowers = async (userId) => {
+  const user = await User.findByPk(userId, {
+    include: [
+      {
+        model: User,
+        as: "followers",
+        attributes: ["id", "name", "email", "avatarURL"],
+        through: { attributes: [] },
+      },
+    ],
+  });
+
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+
+  return user.followers || [];
+};
+
+const getFollowing = async (userId) => {
+  const user = await User.findByPk(userId, {
+    include: [
+      {
+        model: User,
+        as: "following",
+        attributes: ["id", "name", "email", "avatarURL"],
+        through: { attributes: [] },
+      },
+    ],
+  });
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+
+  return user.following || [];
+};
+
 export const usersServices = {
   getUserById,
+  updateUserAvatar,
+  getUserFollowers,
+  getFollowing,
 };
