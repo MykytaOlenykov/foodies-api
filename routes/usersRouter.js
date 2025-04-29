@@ -3,18 +3,10 @@ import express from "express";
 import { authenticate } from "../middlewares/authenticate.js";
 import { imageUpload } from "../middlewares/imageUpload.js";
 import { usersControllers } from "../controllers/usersControllers.js";
-import { authenticate } from "../middlewares/authenticate.js";
 import { validateParams } from "../middlewares/validateParams.js";
 import { getUserByIdSchema } from "../schemas/usersSchemas.js";
 
 export const usersRouter = express.Router();
-
-usersRouter.get(
-  "/:userId",
-  authenticate,
-  validateParams(getUserByIdSchema),
-  usersControllers.getUserById
-);
 
 usersRouter.patch(
   "/avatars",
@@ -23,10 +15,13 @@ usersRouter.patch(
   usersControllers.updateAvatar
 );
 
-usersRouter.get(
-  "/followers",
-  authenticate,
-  usersControllers.getCurrentFollowers
-);
+usersRouter.get("/followers", authenticate, usersControllers.getFollowers);
 
 usersRouter.get("/following", authenticate, usersControllers.getFollowing);
+
+usersRouter.get(
+  "/:userId",
+  authenticate,
+  validateParams(getUserByIdSchema),
+  usersControllers.getUserById
+);

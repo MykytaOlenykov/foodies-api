@@ -25,10 +25,10 @@ const updateAvatar = async (req, res) => {
   res.status(200).json({ data: { avatarURL } });
 };
 
-const getCurrentFollowers = async (req, res) => {
+const getFollowers = async (req, res) => {
   const { id: userId } = req.user;
 
-  const followers = await usersServices.getUserFollowers(userId);
+  const followers = await usersServices.getFollowers(userId);
 
   res.status(200).json({ data: { followers } });
 };
@@ -44,6 +44,6 @@ const getFollowing = async (req, res) => {
 export const usersControllers = {
   getUserById: ctrlWrapper(getUserById),
   updateAvatar: ctrlWrapper(updateAvatar),
-  getCurrentFollowers: ctrlWrapper(getCurrentFollowers),
+  getFollowers: ctrlWrapper(getFollowers),
   getFollowing: ctrlWrapper(getFollowing),
 };

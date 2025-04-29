@@ -115,7 +115,7 @@ const updateUserAvatar = async (userId, file) => {
   return user;
 };
 
-const getUserFollowers = async (userId) => {
+const getFollowers = async (userId) => {
   const user = await User.findByPk(userId, {
     include: [
       {
@@ -156,6 +156,6 @@ const getFollowing = async (userId) => {
 export const usersServices = {
   getUserById,
   updateUserAvatar,
-  getUserFollowers,
+  getFollowers,
   getFollowing,
 };
