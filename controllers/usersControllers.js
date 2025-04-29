@@ -2,45 +2,44 @@ import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 import { usersServices } from "../services/usersServices.js";
 
 const registerController = async (req, res) => {
-  const data = await usersServices.registerUser(req);
+  const user = await usersServices.registerUser(req);
 
-  res.status(201).json(data);
+  res.status(201).json({ data: { user } });
 };
 
 const loginController = async (req, res) => {
-  const { token, user: newUser } = await usersServices.loginUser(req);
+  const { token, user } = await usersServices.loginUser(req);
 
-  res.json({
-    token,
-    user: {
-      email: newUser.email,
-    },
+  res.status(200).json({
+    data: { token, user },
   });
 };
 
 const getAuthorizedUserInfoController = (req, res) => {
-  const { email, name, avatarURL } = req.user;
+  const user = {
+    email: req.user.email,
+    name: req.user.name,
+    avatarURL: req.user.avatarURL,
+  };
 
-  res.json({
-    email,
-    name,
-    avatarURL,
+  res.status(200).json({
+    data: { user },
   });
 };
 
 const getAuthorizedUserDetailInfoController = async (req, res) => {
-  const data = await usersServices.getAuthorizedUserDetailInfo(req);
+  const user = await usersServices.getAuthorizedUserDetailInfo(req);
 
-  res.json({
-    data,
+  res.status(200).json({
+    data: { user },
   });
 };
 
 const getUserDetailInfoController = async (req, res) => {
-  const data = await usersServices.getUserDetailInfo(req);
+  const user = await usersServices.getUserDetailInfo(req);
 
-  res.json({
-    data,
+  res.status(200).json({
+    data: { user },
   });
 };
 
