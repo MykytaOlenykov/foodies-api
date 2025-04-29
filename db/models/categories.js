@@ -23,3 +23,5 @@ export class Category extends Model {
     );
   }
 }
+
+export default Category;

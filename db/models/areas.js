@@ -23,3 +23,5 @@ export class Area extends Model {
     );
   }
 }
+
+export default Area;

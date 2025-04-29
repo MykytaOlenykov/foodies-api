@@ -11,10 +11,12 @@ export const validateQueryString = (schema) => {
       next(HttpError(400, error.message));
     }
 
-    req.query = value;
+    Object.assign(req.query, value);
 
     next();
   };
 
   return func;
 };
+
+export default validateQueryString;
