@@ -10,7 +10,7 @@ export const validateParams = (schema) => {
       next(HttpError(400, error.message));
     }
 
-    req.params = value;
+    Object.assign(req.params, value);
 
     next();
   };
