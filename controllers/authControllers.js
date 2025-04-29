@@ -1,3 +1,35 @@
 import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
+import { authServices } from "../services/authServices.js";
 
-export const authControllers = {};
+const register = async (req, res) => {
+  const user = await authServices.register(req.body);
+
+  res.status(201).json({ data: { user } });
+};
+
+const login = async (req, res) => {
+  const { token, user } = await authServices.login(req.body);
+
+  res.status(200).json({
+    data: { token, user },
+  });
+};
+
+const currentUser = (req, res) => {
+  const user = {
+    id: req.user.id,
+    email: req.user.email,
+    name: req.user.name,
+    avatarURL: req.user.avatarURL,
+  };
+
+  res.status(200).json({
+    data: { user },
+  });
+};
+
+export const authControllers = {
+  register: ctrlWrapper(register),
+  login: ctrlWrapper(login),
+  currentUser: ctrlWrapper(currentUser),
+};
