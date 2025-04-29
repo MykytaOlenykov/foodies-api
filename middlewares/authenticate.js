@@ -8,19 +8,19 @@ export const authenticate = async (req, _, next) => {
     const [bearer, token] = authorization.split(" ");
 
     if (bearer !== "Bearer" || !token) {
-      throw HttpError(401, "Bearer token missing");
+      throw HttpError(401);
     }
 
     const { id } = jwt.verify(token);
     console.log("id", id);
     if (!id) {
-      throw HttpError(401, "Token invalid:");
+      throw HttpError(401);
     }
 
     const user = await User.findByPk(id);
 
     if (!user || !user.token || user.token !== token) {
-      throw HttpError(401, "Not authorized 3");
+      throw HttpError(401);
     }
 
     req.user = user;
