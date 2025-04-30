@@ -1,5 +1,5 @@
 import { HttpError } from "../helpers/HttpError.js";
-import { sequelize, User, Recipe } from "../db/sequelize.js";
+import { sequelize, User, Recipe, UserFollower } from "../db/sequelize.js";
 import { filesServices } from "./filesServices.js";
 
 const getCountFuncByColumn = (col) => {
@@ -96,59 +96,65 @@ const updateUserAvatar = async (userId, file) => {
 };
 
 const getFollowers = async (userId) => {
-  const user = await User.findByPk(userId, {
-    include: [
-      {
-        model: User,
-        as: "followers",
-        attributes: ["id", "name", "email", "avatarURL"],
-        through: { attributes: [] },
-        include: [
-          {
-            model: Recipe,
-            as: "recipes",
-            foreignKey: "ownerId",
-            attributes: ["id", "thumb"],
-            limit: 4,
-          },
-        ],
-      },
-    ],
-  });
+  const [user, total] = await Promise.all([
+    User.findByPk(userId, {
+      include: [
+        {
+          model: User,
+          as: "followers",
+          attributes: ["id", "name", "email", "avatarURL"],
+          through: { attributes: [] },
+          include: [
+            {
+              model: Recipe,
+              as: "recipes",
+              foreignKey: "ownerId",
+              attributes: ["id", "thumb"],
+              limit: 4,
+            },
+          ],
+        },
+      ],
+    }),
+    UserFollower.count({ where: { userId } }),
+  ]);
 
   if (!user) {
     throw HttpError(404, "User not found");
   }
 
-  return user.followers || [];
+  return { followers: user.followers, total };
 };
 
 const getFollowing = async (userId) => {
-  const user = await User.findByPk(userId, {
-    include: [
-      {
-        model: User,
-        as: "following",
-        attributes: ["id", "name", "email", "avatarURL"],
-        through: { attributes: [] },
-        include: [
-          {
-            model: Recipe,
-            as: "recipes",
-            foreignKey: "ownerId",
-            attributes: ["id", "thumb"],
-            limit: 4,
-          },
-        ],
-      },
-    ],
-  });
+  const [user, total] = await Promise.all([
+    User.findByPk(userId, {
+      include: [
+        {
+          model: User,
+          as: "following",
+          attributes: ["id", "name", "email", "avatarURL"],
+          through: { attributes: [] },
+          include: [
+            {
+              model: Recipe,
+              as: "recipes",
+              foreignKey: "ownerId",
+              attributes: ["id", "thumb"],
+              limit: 4,
+            },
+          ],
+        },
+      ],
+    }),
+    UserFollower.count({ where: { followerId: userId } }),
+  ]);
 
   if (!user) {
     throw HttpError(404, "User not found");
   }
 
-  return user.following || [];
+  return { following: user.following, total };
 };
 
 export const usersServices = {
