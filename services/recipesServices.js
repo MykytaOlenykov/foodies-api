@@ -11,7 +11,11 @@ const removeFavorite = async ({ userId, recipeId }) => {
 
   if (!recipe) throw HttpError(404, "Recipe not found");
 
-  await UserFavoriteRecipe.destroy({ where: { userId, recipeId } });
+  const count = await UserFavoriteRecipe.destroy({
+    where: { userId, recipeId },
+  });
+
+  if (count === 0) throw HttpError(404, "Recipe not found");
 };
 
 const getUserFavoriteRecipes = async (userId, settings) => {
