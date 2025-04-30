@@ -1,8 +1,14 @@
-import express from "express";
-import { categoriesControllers } from "../controllers/categoriesControllers.js";
+import { Router } from "express";
+import { getAllCategories } from "../controllers/categoriesControllers.js";
+import { validateQueryString } from "../middlewares/validateQueryString.js";
+import { paginationSchema } from "../schemas/commonSchemas.js";
 
-const categoriesRouter = express.Router();
+const categoriesRouter = Router();
 
-categoriesRouter.get("/", categoriesControllers.getAllCategories);
+categoriesRouter.get(
+  "/",
+  validateQueryString(paginationSchema),
+  getAllCategories
+);
 
 export { categoriesRouter };
