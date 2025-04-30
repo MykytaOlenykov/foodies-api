@@ -1,6 +1,6 @@
 import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 import { recipesServices } from "../services/recipesServices.js";
-import { HttpError } from "../helpers/HttpError.js";
+
 
 const getFilteredRecipes = async (req, res) => {
   const { category, ingredient, area, page = 1, limit = 10, sort } = req.query;
@@ -11,11 +11,6 @@ const getFilteredRecipes = async (req, res) => {
 const getRecipeById = async (req, res) => {
   const { id } = req.params;
   const data = await recipesServices.getOneRecipe({ id });
-
-  if (!data) {
-    throw HttpError(404, "Recipe not found");
-  }
-
   res.json(data);
 };
 
