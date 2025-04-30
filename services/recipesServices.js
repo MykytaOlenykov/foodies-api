@@ -128,12 +128,6 @@ const getOneRecipe = async({id}) => {
         as: "ingredients",
         through: { attributes: [] },
       },
-      {
-        model: Recipe.sequelize.models.User,
-        as: "fans",
-        attributes: ["id"],
-        through: { attributes: [] },
-      },
     ],
   });
   if (!recipe) throw HttpError(404, "Not found");
