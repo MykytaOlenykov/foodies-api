@@ -4,7 +4,10 @@ import { authenticate } from "../middlewares/authenticate.js";
 import { imageUpload } from "../middlewares/imageUpload.js";
 import { usersControllers } from "../controllers/usersControllers.js";
 import { validateParams } from "../middlewares/validateParams.js";
-import { getUserByIdSchema } from "../schemas/usersSchemas.js";
+import {
+  getUserByIdSchema,
+  getFollowersParamsSchema,
+} from "../schemas/usersSchemas.js";
 
 export const usersRouter = express.Router();
 
@@ -14,8 +17,6 @@ usersRouter.patch(
   imageUpload.single("avatar"),
   usersControllers.updateAvatar
 );
-
-usersRouter.get("/followers", authenticate, usersControllers.getFollowers);
 
 usersRouter.get("/following", authenticate, usersControllers.getFollowing);
 
@@ -36,4 +37,10 @@ usersRouter.delete(
   "/following/:userId",
   authenticate,
   usersControllers.unFollowUser
+); 
+
+usersRouter.get(
+  "/:userId/followers",
+  validateParams(getFollowersParamsSchema),
+  usersControllers.getFollowers
 );
