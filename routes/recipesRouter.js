@@ -1,24 +1,27 @@
 import express from "express";
 
-import { querySchema, popularSchema } from "../schemas/validateQueryString.js";
 import { validateQueryString } from "../middlewares/validateQueryString.js";
 import { recipesControllers } from "../controllers/recipesControllers.js";
 import { authenticate } from "../middlewares/authenticate.js";
-import { updateFavoriteByIdSchema } from "../schemas/recipesSchemas.js";
 import { validateParams } from "../middlewares/validateParams.js";
+import {
+  updateFavoriteByIdSchema,
+  getRecipesQueryStringSchema,
+  getRecipeByIdParamsSchema,
+} from "../schemas/recipesSchemas.js";
 import { paginationSchema } from "../schemas/commonSchemas.js";
 
 export const recipesRouter = express.Router();
 
 recipesRouter.get(
   "/",
-  validateQueryString(querySchema),
-  recipesControllers.getFilteredRecipes
+  validateQueryString(getRecipesQueryStringSchema),
+  recipesControllers.getRecipes
 );
 
 recipesRouter.get(
   "/popular",
-  validateQueryString(popularSchema),
+  validateQueryString(paginationSchema),
   recipesControllers.getPopularRecipes
 );
 
@@ -26,7 +29,13 @@ recipesRouter.get(
   "/favorites",
   authenticate,
   validateQueryString(paginationSchema),
-  recipesControllers.getMyFavorites
+  recipesControllers.getFavoriteRecipes
+);
+
+recipesRouter.get(
+  "/:recipeId",
+  validateParams(getRecipeByIdParamsSchema),
+  recipesControllers.getRecipeById
 );
 
 recipesRouter.post(
@@ -42,5 +51,3 @@ recipesRouter.delete(
   validateParams(updateFavoriteByIdSchema),
   recipesControllers.removeFavoriteRecipe
 );
-
-recipesRouter.get("/:id", recipesControllers.getRecipeById);
