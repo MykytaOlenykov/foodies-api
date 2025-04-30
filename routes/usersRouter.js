@@ -25,3 +25,15 @@ usersRouter.get(
   validateParams(getUserByIdSchema),
   usersControllers.getUserById
 );
+
+usersRouter.post(
+  "/following/:userId",
+  authenticate,
+  usersControllers.followUser
+);
+
+usersRouter.delete(
+  "/following/:userId",
+  authenticate,
+  usersControllers.unFollowUser
+);

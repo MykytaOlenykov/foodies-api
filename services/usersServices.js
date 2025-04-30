@@ -153,9 +153,37 @@ const getFollowing = async (userId) => {
   return user.following || [];
 };
 
+const followUser = async (userId, followId) => {
+  const [user, followUser] = await Promise.all([
+    User.findByPk(userId),
+    User.findByPk(followId),
+  ]);
+
+  if (!followUser) {
+    throw HttpError(404, "User not found");
+  }
+
+  await user.addFollowing(followUser);
+};
+
+const unFollowUser = async (userId, followId) => {
+  const [user, unFollowUser] = await Promise.all([
+    User.findByPk(userId),
+    User.findByPk(followId),
+  ]);
+
+  if (!user || !unFollowUser) {
+    throw HttpError(404, "User not found");
+  }
+
+  await user.removeFollowing(unFollowUser);
+};
+
 export const usersServices = {
   getUserById,
   updateUserAvatar,
   getFollowers,
   getFollowing,
+  followUser,
+  unFollowUser,
 };
