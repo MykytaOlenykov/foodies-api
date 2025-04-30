@@ -7,10 +7,11 @@ export const listTestimonials = async (filter = {}, pagination = {}) => {
 
   const { rows, count } = await Testimonial.findAndCountAll({
     where: filter,
+    attributes: { exclude: ["ownerId"] },
     offset,
     limit,
     order: [["createdAt", "DESC"]],
-    include: [{ model: User, as: "owner", attributes: ["name"] }],
+    include: [{ model: User, as: "owner", attributes: ["id", "name"] }],
   });
 
   return { testimonials: rows, total: count };

@@ -41,6 +41,8 @@ const getRecipes = async ({
 
   const { rows, count } = await Recipe.findAndCountAll({
     where,
+    attributes: ["id", "title", "description", "createdAt", "updatedAt"],
+    include: { model: User, as: "owner", attributes: ["id", "name"] },
     limit: limit,
     offset: getOffset(page, limit),
     order: [["id", "DESC"]],
@@ -58,21 +60,29 @@ const getRecipes = async ({
  */
 const getRecipeById = async (recipeId) => {
   const recipe = await Recipe.findByPk(recipeId, {
+    attributes: {
+      exclude: ["ownerId", "areaId", "categoryId"],
+    },
     include: [
+      {
+        model: User,
+        as: "owner",
+        attributes: ["id", "name"],
+      },
       {
         model: Area,
         as: "area",
-        attributes: ["name"],
+        attributes: ["id", "name"],
       },
       {
         model: Category,
         as: "category",
-        attributes: ["name"],
+        attributes: ["id", "name"],
       },
       {
         model: Ingredient,
         as: "ingredients",
-        attributes: ["name"],
+        attributes: ["id", "name"],
         through: {
           as: "recipeIngredient",
           attributes: ["measure"],
@@ -87,10 +97,12 @@ const getRecipeById = async (recipeId) => {
 
   return {
     ...recipeJSON,
-    ingredients: recipeJSON.ingredients.map(({ name, recipeIngredient }) => ({
-      name,
-      measure: recipeIngredient.measure,
-    })),
+    ingredients: recipeJSON.ingredients.map(
+      ({ recipeIngredient, ...otherData }) => ({
+        ...otherData,
+        measure: recipeIngredient.measure,
+      })
+    ),
   };
 };
 
@@ -107,38 +119,58 @@ const getRecipeById = async (recipeId) => {
 const getPopularRecipes = async ({ page = 1, limit = 10 }) => {
   const [recipes, total] = await Promise.all([
     Recipe.findAll({
-      attributes: {
-        include: [
-          [sequelize.fn("COUNT", sequelize.col("fans.id")), "favoritesCount"],
-        ],
-      },
+      attributes: [
+        "id",
+        "title",
+        "description",
+        "createdAt",
+        "updatedAt",
+        [sequelize.fn("COUNT", sequelize.col("fans.id")), "favoritesCount"],
+      ],
       include: [
         {
           model: User,
           as: "fans",
           attributes: [],
-          through: { attributes: [] },
-          required: false,
+          through: {
+            attributes: [],
+            model: UserFavoriteRecipe,
+          },
+        },
+        {
+          model: User,
+          as: "owner",
+          attributes: ["id", "name"],
         },
       ],
-      group: ["Recipe.id"],
-      order: [[sequelize.literal('"favoritesCount"'), "DESC"]],
+      group: ["Recipe.id", "owner.id"],
+      order: [
+        [sequelize.literal('"favoritesCount"'), "DESC"],
+        ["id", "DESC"],
+      ],
       limit,
       offset: getOffset(page, limit),
       subQuery: false,
     }),
+    Recipe.count(),
   ]);
+
+  const popularRecipes = recipes.map((recipe) => {
+    const { favoritesCount, ...otherData } = recipe.toJSON();
+    return otherData;
+  });
 
   return {
     total,
-    popularRecipes: recipes.map((recipe) => {
-      const { favoritesCount, ...otherData } = recipe.toJSON();
-      return otherData;
-    }),
+    popularRecipes,
   };
 };
 
 const addFavorite = async ({ userId, recipeId }) => {
+  const recipe = await Recipe.findByPk(recipeId);
+
+  if (!recipe) throw HttpError(404, "Recipe not found");
+
   await UserFavoriteRecipe.findOrCreate({ where: { userId, recipeId } });
 };
 
