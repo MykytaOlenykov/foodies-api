@@ -3,7 +3,7 @@ import { Testimonial } from "../db/models/testimonials.js";
 import { getOffset } from "../helpers/getOffset.js";
 
 export const listTestimonials = async (filter = {}, pagination = {}) => {
-  const { page = 1, limit = 3 } = pagination;
+  const { page = 1, limit = 10 } = pagination;
   const offset = getOffset(page, limit);
 
   const { rows, count } = await Testimonial.findAndCountAll({

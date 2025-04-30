@@ -6,7 +6,7 @@ import {
 import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 
 export const getAllTestimonials = ctrlWrapper(async (req, res) => {
-  const { page = 1, limit = 3 } = req.query;
+  const { page = 1, limit = 10 } = req.query;
 
   const { testimonials, total } = await listTestimonials({}, { page, limit });
 
