@@ -7,6 +7,7 @@ export const listIngredients = async (filter = {}, pagination = {}) => {
 
   const { rows, count } = await Ingredient.findAndCountAll({
     where: filter,
+    attributes: ["id", "name", "imgURL"],
     offset,
     limit,
     order: [["name", "ASC"]],
