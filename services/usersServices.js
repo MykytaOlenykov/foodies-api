@@ -2,44 +2,44 @@ import { HttpError } from "../helpers/HttpError.js";
 import { sequelize, User, Recipe } from "../db/sequelize.js";
 import { filesServices } from "./filesServices.js";
 
-const getUserById = async (userId, user) => {
-  const privateAttributes =
-    userId === user.id
-      ? [
-          [
-            sequelize.fn(
-              "COUNT",
-              sequelize.fn("DISTINCT", sequelize.col("favoriteRecipes.id"))
-            ),
-            "favoriteRecipesCount",
-          ],
-          [
-            sequelize.fn(
-              "COUNT",
-              sequelize.fn("DISTINCT", sequelize.col("following.id"))
-            ),
-            "followingCount",
-          ],
-        ]
-      : [];
+const getUserById = async (userId, currentUser) => {
+  const isOwnProfile = userId === currentUser.id;
 
-  const privateInclude =
-    userId === user.id
-      ? [
-          {
-            model: Recipe,
-            as: "favoriteRecipes",
-            through: { attributes: [] },
-            attributes: [],
-          },
-          {
-            model: User,
-            as: "following",
-            through: { attributes: [] },
-            attributes: [],
-          },
-        ]
-      : [];
+  const privateAttributes = isOwnProfile
+    ? [
+        [
+          sequelize.fn(
+            "COUNT",
+            sequelize.fn("DISTINCT", sequelize.col("favoriteRecipes.id"))
+          ),
+          "favoriteRecipesCount",
+        ],
+        [
+          sequelize.fn(
+            "COUNT",
+            sequelize.fn("DISTINCT", sequelize.col("following.id"))
+          ),
+          "followingCount",
+        ],
+      ]
+    : [];
+
+  const privateInclude = isOwnProfile
+    ? [
+        {
+          model: Recipe,
+          as: "favoriteRecipes",
+          through: { attributes: [] },
+          attributes: [],
+        },
+        {
+          model: User,
+          as: "following",
+          through: { attributes: [] },
+          attributes: [],
+        },
+      ]
+    : [];
 
   const userInstance = await User.findByPk(userId, {
     include: [
