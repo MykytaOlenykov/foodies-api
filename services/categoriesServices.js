@@ -1,17 +1,26 @@
+import { Op } from "sequelize";
 import { Category } from "../db/models/categories.js";
+import { getOffset } from "../helpers/getOffset.js";
 
-export const listCategories = async (pagination = {}) => {
+export const listCategories = async (
+  filter = {},
+  pagination = {},
+  sort = {}
+) => {
   const { page = 1, limit = 10 } = pagination;
-  const normalizedLimit = Number(limit);
-  const offset = (Number(page) - 1) * normalizedLimit;
+  const offset = getOffset(page, limit);
 
-  return await Category.findAll({
-    limit: normalizedLimit,
+  const where = {};
+  if (filter.name) {
+    where.name = { [Op.iLike]: `%${filter.name}%` };
+  }
+
+  const { rows, count } = await Category.findAndCountAll({
+    where,
     offset,
-    order: [["name", "ASC"]],
+    limit,
+    order: [[sort.by || "name", sort.order || "ASC"]],
   });
-};
 
-export const countCategories = async () => {
-  return await Category.count();
+  return { categories: rows, total: count };
 };

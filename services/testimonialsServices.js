@@ -1,31 +1,20 @@
+import { User } from "../db/models/users.js";
 import { Testimonial } from "../db/models/testimonials.js";
-import { User } from "../db/models/users.js"; // to join with owner.name
+import { getOffset } from "../helpers/getOffset.js";
 
-export const getAll = async (search = {}) => {
-  const {
-    filter = {},
-    settings = {},
-  } = search;
+export const listTestimonials = async (filter = {}, pagination = {}) => {
+  const { page = 1, limit = 10 } = pagination;
+  const offset = getOffset(page, limit);
 
-  const { limit = 3, offset = 0 } = settings;
-
-  return await Testimonial.findAll({
+  const { rows, count } = await Testimonial.findAndCountAll({
     where: filter,
-    limit: Number(limit),
-    offset: Number(offset),
+    offset,
+    limit,
     order: [["createdAt", "DESC"]],
-    include: [
-      {
-        model: User,
-        as: "owner",
-        attributes: ["name"],
-      },
-    ],
+    include: [{ model: User, as: "owner", attributes: ["name"] }],
   });
-};
 
-export const countTestimonials = async () => {
-  return await Testimonial.count();
+  return { testimonials: rows, total: count };
 };
 
 export const createTestimonial = async (data) => {

@@ -1,15 +1,20 @@
-import { listCategories, countCategories } from "../services/categoriesServices.js";
+import { listCategories } from "../services/categoriesServices.js";
 import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 
-const getAllCategories = async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+export const getAllCategories = ctrlWrapper(async (req, res) => {
+  const {
+    page = 1,
+    limit = 10,
+    name,
+    sort = "name",
+    order = "ASC",
+  } = req.query;
 
-  const total = await countCategories();
-  const result = await listCategories({ page, limit });
+  const { categories, total } = await listCategories(
+    { name }, // filter
+    { page, limit }, // pagination
+    { by: sort, order: order.toUpperCase() } // sorting
+  );
 
-  res.json({ total, result });
-};
-
-export const categoriesControllers = {
-  getAllCategories: ctrlWrapper(getAllCategories),
-};
+  res.status(200).json({ data: { total, categories } });
+});
