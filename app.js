@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
@@ -13,11 +15,12 @@ import { sequelize, verifySequelizeConnection } from "./db/sequelize.js";
 import { settings } from "./settings.js";
 
 const app = express();
+const staticPath = path.resolve("public");
 
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
+app.use("/api/static", express.static(staticPath));
 
 app.use("/api/areas", areasRouter);
 app.use("/api/auth", authRouter);

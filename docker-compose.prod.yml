@@ -34,6 +34,8 @@ services:
     build:
       context: .
       dockerfile: prod.Dockerfile
+    volumes:
+      - ./volumes/foodies-api/static/:/app/public/:rw
 
 networks:
   foodies_postgres_network:
