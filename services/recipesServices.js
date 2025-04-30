@@ -1,32 +1,38 @@
-import { UserFavoriteRecipe } from "../db/models/userFavoriteRecipes.js";
-import { User } from "../db/models/users.js";
-import { HttpError } from "../helpers/HttpError.js";
+import { UserFavoriteRecipe, Recipe } from "../db/sequelize.js";
+import { getOffset } from "../helpers/getOffset.js";
 
-export const addFavorite = async (where) => await UserFavoriteRecipe.findOrCreate({ where });
+const addFavorite = async ({ userId, recipeId }) => {
+  await UserFavoriteRecipe.findOrCreate({ where: { userId, recipeId } });
+};
 
-export const removeFavorite = async (where) => await UserFavoriteRecipe.destroy({ where });
+const removeFavorite = async ({ userId, recipeId }) => {
+  await UserFavoriteRecipe.destroy({ where: { userId, recipeId } });
+};
 
-export const getUserFavoriteRecipes = async (userId, settings) => {
-    const { page, limit, offset } = settings;
+const getUserFavoriteRecipes = async (userId, settings) => {
+  const { page = 1, limit = 10 } = settings;
+  const offset = getOffset(page, limit);
 
-    const user = await User.findByPk(userId);
-    if (!user) {
-        throw HttpError(404, "User not found");
-    }
-
-    const favoriteRecipes = await user.getFavoriteRecipes({
-        attributes: ["id", "title", "thumb", "description"],
-        joinTableAttributes: [],
-        offset,
-        limit,
-    });
-
-    const total = await UserFavoriteRecipe.count({
+  const { count, rows } = await Recipe.findAndCountAll({
+    include: [
+      {
+        model: UserFavoriteRecipe,
+        as: "userFavoriteRecipes",
         where: { userId },
-    });
+        attributes: [],
+        required: true,
+      },
+    ],
+    attributes: ["id", "title", "thumb", "description"],
+    offset,
+    limit,
+  });
 
-    return {
-        total,
-        favoriteRecipes,
-    };
+  return { total: count, favoriteRecipes: rows };
+};
+
+export const recipesServices = {
+  addFavorite,
+  removeFavorite,
+  getUserFavoriteRecipes,
 };

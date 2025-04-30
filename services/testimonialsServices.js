@@ -1,5 +1,4 @@
-import { User } from "../db/models/users.js";
-import { Testimonial } from "../db/models/testimonials.js";
+import { User, Testimonial } from "../db/sequelize.js";
 import { getOffset } from "../helpers/getOffset.js";
 
 export const listTestimonials = async (filter = {}, pagination = {}) => {

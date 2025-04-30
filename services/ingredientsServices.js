@@ -1,4 +1,4 @@
-import { Ingredient } from "../db/models/ingredients.js";
+import { Ingredient } from "../db/sequelize.js";
 import { getOffset } from "../helpers/getOffset.js";
 
 export const listIngredients = async (filter = {}, pagination = {}) => {
