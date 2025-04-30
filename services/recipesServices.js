@@ -109,8 +109,6 @@ const getRecipes = async ({ category, ingredient, area, page, limit, sort, popul
   return {
     recipes,
     total,
-    page: Number(page),
-    totalPages: Math.ceil(total / limit),
   };
 };
 
