@@ -1,31 +1,26 @@
-import * as testimonialsService from "../services/testimonialsServices.js";
+import {
+  listTestimonials,
+  createTestimonial,
+} from "../services/testimonialsServices.js";
+
 import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 
-const getAllTestimonials = async (req, res) => {
+export const getAllTestimonials = ctrlWrapper(async (req, res) => {
   const { page = 1, limit = 3 } = req.query;
-  const offset = (page - 1) * limit;
 
-  const total = await testimonialsService.countTestimonials();
-  const result = await testimonialsService.getAll({
-    settings: { limit, offset },
-  });
+  const { testimonials, total } = await listTestimonials({}, { page, limit });
 
-  res.json({ total, result });
-};
+  res.status(200).json({ total, result: testimonials });
+});
 
-const createTestimonial = async (req, res) => {
-  const { id } = req.user; // user id from authenticate
+export const createTestimonialController = ctrlWrapper(async (req, res) => {
+  const { id } = req.user;
   const { testimonial } = req.body;
 
-  const newTestimonial = await testimonialsService.createTestimonial({
+  const newTestimonial = await createTestimonial({
     testimonial,
-    ownerId: id, // Sequelize connection with ownerId
+    ownerId: id,
   });
 
   res.status(201).json(newTestimonial);
-};
-
-export const testimonialsControllers = {
-  getAllTestimonials: ctrlWrapper(getAllTestimonials),
-  createTestimonial: ctrlWrapper(createTestimonial),
-};
+});

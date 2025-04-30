@@ -1,18 +1,16 @@
 import { Ingredient } from "../db/models/ingredients.js";
+import { getOffset } from "../helpers/getOffset.js";
 
 export const listIngredients = async (filter = {}, pagination = {}) => {
   const { page = 1, limit = 10 } = pagination;
-  const normalizedLimit = Number(limit);
-  const offset = (Number(page) - 1) * normalizedLimit;
+  const offset = getOffset(page, limit);
 
-  return await Ingredient.findAll({
+  const { rows, count } = await Ingredient.findAndCountAll({
     where: filter,
-    limit: normalizedLimit,
     offset,
+    limit,
     order: [["name", "ASC"]],
   });
-};
 
-export const countIngredients = async () => {
-  return await Ingredient.count();
+  return { ingredients: rows, total: count };
 };
