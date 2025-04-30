@@ -1,11 +1,16 @@
 import { UserFavoriteRecipe, Recipe } from "../db/sequelize.js";
 import { getOffset } from "../helpers/getOffset.js";
+import { HttpError } from "../helpers/HttpError.js";
 
 const addFavorite = async ({ userId, recipeId }) => {
   await UserFavoriteRecipe.findOrCreate({ where: { userId, recipeId } });
 };
 
 const removeFavorite = async ({ userId, recipeId }) => {
+  const recipe = await Recipe.findByPk(recipeId);
+
+  if (!recipe) throw HttpError(404, "Recipe not found");
+
   await UserFavoriteRecipe.destroy({ where: { userId, recipeId } });
 };
 
