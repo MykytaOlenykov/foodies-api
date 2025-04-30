@@ -2,24 +2,20 @@ import express from "express";
 
 import { recipesControllers } from "../controllers/recipesControllers.js";
 import { authenticate } from "../middlewares/authenticate.js";
-import { getFavoritesSchema, updateFavoriteSchema } from "../schemas/recipesSchemas.js";
+import { updateFavoriteByIdSchema, updateFavoriteSchema } from "../schemas/recipesSchemas.js";
 import { validateBody } from "../middlewares/validateBody.js";
 import { validateQueryString } from "../middlewares/validateQueryString.js";
-import isEmptyBody from "../middlewares/isEmptyBody.js";
+import { validateParams } from "../middlewares/validateParams.js";
+import { paginationSchema } from "../schemas/commonSchemas.js";
 
 export const recipesRouter = express.Router();
 
-recipesRouter.get(
-    "/favorites",
-    authenticate,
-    validateQueryString(getFavoritesSchema),
-    recipesControllers.getMyFavorites
-);
+recipesRouter.get("/favorites", authenticate, validateQueryString(paginationSchema), recipesControllers.getMyFavorites);
 
 recipesRouter.patch(
-    "/:recipeId/favorite",
+    "/favorites/:recipeId",
     authenticate,
-    isEmptyBody,
+    validateParams(updateFavoriteByIdSchema),
     validateBody(updateFavoriteSchema),
     recipesControllers.updateFavoriteStatus
 );

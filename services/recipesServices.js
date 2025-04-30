@@ -27,16 +27,12 @@ export const getUserFavoriteRecipes = async (userId, settings) => {
         limit,
     });
 
-    const totalItems = await UserFavoriteRecipe.count({
+    const total = await UserFavoriteRecipe.count({
         where: { userId },
     });
 
-    const totalPages = Math.ceil(totalItems / limit);
-
     return {
-        totalItems,
-        totalPages,
-        currentPage: page,
-        items: favoriteRecipes,
+        total,
+        favoriteRecipes,
     };
 };
