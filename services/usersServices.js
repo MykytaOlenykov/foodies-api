@@ -2,25 +2,17 @@ import { HttpError } from "../helpers/HttpError.js";
 import { sequelize, User, Recipe } from "../db/sequelize.js";
 import { filesServices } from "./filesServices.js";
 
+const getCountFuncByColumn = (col) => {
+  return sequelize.fn("COUNT", sequelize.fn("DISTINCT", sequelize.col(col)));
+};
+
 const getUserById = async (userId, currentUser) => {
   const isOwnProfile = userId === currentUser.id;
 
   const privateAttributes = isOwnProfile
     ? [
-        [
-          sequelize.fn(
-            "COUNT",
-            sequelize.fn("DISTINCT", sequelize.col("favoriteRecipes.id"))
-          ),
-          "favoriteRecipesCount",
-        ],
-        [
-          sequelize.fn(
-            "COUNT",
-            sequelize.fn("DISTINCT", sequelize.col("following.id"))
-          ),
-          "followingCount",
-        ],
+        [getCountFuncByColumn("favoriteRecipes.id"), "favoriteRecipesCount"],
+        [getCountFuncByColumn("following.id"), "followingCount"],
       ]
     : [];
 
@@ -61,20 +53,8 @@ const getUserById = async (userId, currentUser) => {
       "name",
       "email",
       "avatarURL",
-      [
-        sequelize.fn(
-          "COUNT",
-          sequelize.fn("DISTINCT", sequelize.col("recipes.id"))
-        ),
-        "recipesCount",
-      ],
-      [
-        sequelize.fn(
-          "COUNT",
-          sequelize.fn("DISTINCT", sequelize.col("followers.id"))
-        ),
-        "followersCount",
-      ],
+      [getCountFuncByColumn("recipes.id"), "recipesCount"],
+      [getCountFuncByColumn("followers.id"), "followersCount"],
       ...privateAttributes,
     ],
     group: ["User.id"],
@@ -123,6 +103,15 @@ const getFollowers = async (userId) => {
         as: "followers",
         attributes: ["id", "name", "email", "avatarURL"],
         through: { attributes: [] },
+        include: [
+          {
+            model: Recipe,
+            as: "recipes",
+            foreignKey: "ownerId",
+            attributes: ["id", "thumb"],
+            limit: 4,
+          },
+        ],
       },
     ],
   });
@@ -142,6 +131,15 @@ const getFollowing = async (userId) => {
         as: "following",
         attributes: ["id", "name", "email", "avatarURL"],
         through: { attributes: [] },
+        include: [
+          {
+            model: Recipe,
+            as: "recipes",
+            foreignKey: "ownerId",
+            attributes: ["id", "thumb"],
+            limit: 4,
+          },
+        ],
       },
     ],
   });
