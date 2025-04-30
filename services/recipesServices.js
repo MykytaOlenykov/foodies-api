@@ -1,5 +1,12 @@
-import { Sequelize } from "sequelize";
-import { UserFavoriteRecipe, Recipe } from "../db/sequelize.js";
+import {
+  sequelize,
+  UserFavoriteRecipe,
+  User,
+  Recipe,
+  Area,
+  Category,
+  Ingredient,
+} from "../db/sequelize.js";
 import { getOffset } from "../helpers/getOffset.js";
 import { HttpError } from "../helpers/HttpError.js";
 
@@ -8,9 +15,9 @@ import { HttpError } from "../helpers/HttpError.js";
  * Can sort by popularity if `popular: true` flag is passed.
  *
  * @param {Object} options - Query parameters
- * @param {number} [options.category] - Recipe category ID
- * @param {string} [options.ingredient] - Ingredient name to filter
- * @param {number} [options.area] - Origin region ID
+ * @param {number} [options.categoryId] - Recipe category ID
+ * @param {string} [options.ingredientId] - Ingredient name to filter
+ * @param {number} [options.areaId] - Origin region ID
  * @param {number} [options.page=1] - Page number for pagination
  * @param {number} [options.limit=10] - Number of recipes per page
  * @param {string} [options.sort] - Sort by, such as 'title_ASC' or 'time_DESC'
@@ -20,126 +27,71 @@ import { HttpError } from "../helpers/HttpError.js";
  */
 
 const getRecipes = async ({
-  category,
-  ingredient,
-  area,
-  page,
-  limit,
-  sort,
-  popular = false,
+  categoryId,
+  areaId,
+  ingredientId,
+  page = 1,
+  limit = 10,
 }) => {
   const where = {};
-  if (category) where.categoryId = category;
-  if (area) where.areaId = area;
 
-  const offset = getOffset(page, limit);
-  const include = [];
+  if (areaId) where.areaId = areaId;
+  if (categoryId) where.categoryId = categoryId;
+  if (ingredientId) where.ingredientId = ingredientId;
 
-  if (ingredient) {
-    include.push({
-      model: Recipe.sequelize.models.Ingredient,
-      as: "ingredients",
-      where: { name: ingredient },
-      through: { attributes: [] },
-      attributes: [],
-    });
-  }
-
-  if (popular) {
-    include.push({
-      model: Recipe.sequelize.models.User,
-      as: "fans",
-      attributes: [],
-      through: { attributes: [] },
-    });
-  }
-
-  const order = [];
-
-  if (popular) {
-    order.push([Sequelize.literal(`"fansCount"`), "DESC"]);
-  } else if (sort) {
-    const [field, direction] = sort.split("_");
-    order.push([field, direction.toUpperCase()]);
-  }
-
-  const findOptions = {
+  const { rows, count } = await Recipe.findAndCountAll({
     where,
-    offset,
-    limit: Number(limit),
-    include,
-    ...(order.length && { order }),
-    ...(popular && {
-      attributes: {
-        include: [
-          [Sequelize.fn("COUNT", Sequelize.col("fans.id")), "fansCount"],
-        ],
-      },
-      group: ["Recipe.id"],
-      subQuery: false,
-    }),
-  };
+    limit: limit,
+    offset: getOffset(page, limit),
+    order: [["id", "DESC"]],
+  });
 
-  const countOptions = { where };
-
-  if (ingredient) {
-    countOptions.distinct = true;
-    countOptions.col = "id";
-    countOptions.include = [
-      {
-        model: Recipe.sequelize.models.Ingredient,
-        as: "ingredients",
-        where: { name: ingredient },
-        through: { attributes: [] },
-      },
-    ];
-  } else if (popular) {
-    const [rows] = await Recipe.sequelize.query(`
-      SELECT DISTINCT "recipeId"
-      FROM "userFavoriteRecipes"
-    `);
-
-    const total = rows.length;
-    const recipes = await Recipe.findAll(findOptions);
-
-    return {
-      recipes,
-      total,
-      page: Number(page),
-      totalPages: Math.ceil(total / limit),
-    };
-  }
-
-  const [recipes, total] = await Promise.all([
-    Recipe.findAll(findOptions),
-    Recipe.count(countOptions),
-  ]);
-
-  return {
-    recipes,
-    total,
-  };
+  return { total: count, recipes: rows };
 };
 
 /**
  * Gets a single recipe by search term.
  * Returns the recipe's ingredients and fans.
  *
- * @param {Object} query - The search term (e.g. { id: 1 })
+ * @param {number} recipeId
  * @returns {Object|null} The recipe found or null
  */
-const getOneRecipe = async ({ id }) => {
-  const recipe = await Recipe.findByPk(id, {
+const getRecipeById = async (recipeId) => {
+  const recipe = await Recipe.findByPk(recipeId, {
     include: [
       {
-        model: Recipe.sequelize.models.Ingredient,
+        model: Area,
+        as: "area",
+        attributes: ["name"],
+      },
+      {
+        model: Category,
+        as: "category",
+        attributes: ["name"],
+      },
+      {
+        model: Ingredient,
         as: "ingredients",
-        through: { attributes: [] },
+        attributes: ["name"],
+        through: {
+          as: "recipeIngredient",
+          attributes: ["measure"],
+        },
       },
     ],
   });
+
   if (!recipe) throw HttpError(404, "Not found");
-  return recipe;
+
+  const recipeJSON = recipe.toJSON();
+
+  return {
+    ...recipeJSON,
+    ingredients: recipeJSON.ingredients.map(({ name, recipeIngredient }) => ({
+      name,
+      measure: recipeIngredient.measure,
+    })),
+  };
 };
 
 /**
@@ -152,8 +104,38 @@ const getOneRecipe = async ({ id }) => {
  *
  * @returns {Object} Result with popular recipes
  */
-const getPopularRecipes = async ({ page, limit }) => {
-  return await getRecipes({ page, limit, popular: true });
+const getPopularRecipes = async ({ page = 1, limit = 10 }) => {
+  const [recipes, total] = await Promise.all([
+    Recipe.findAll({
+      attributes: {
+        include: [
+          [sequelize.fn("COUNT", sequelize.col("fans.id")), "favoritesCount"],
+        ],
+      },
+      include: [
+        {
+          model: User,
+          as: "fans",
+          attributes: [],
+          through: { attributes: [] },
+          required: false,
+        },
+      ],
+      group: ["Recipe.id"],
+      order: [[sequelize.literal('"favoritesCount"'), "DESC"]],
+      limit,
+      offset: getOffset(page, limit),
+      subQuery: false,
+    }),
+  ]);
+
+  return {
+    total,
+    popularRecipes: recipes.map((recipe) => {
+      const { favoritesCount, ...otherData } = recipe.toJSON();
+      return otherData;
+    }),
+  };
 };
 
 const addFavorite = async ({ userId, recipeId }) => {
@@ -196,7 +178,7 @@ const getUserFavoriteRecipes = async (userId, settings) => {
 
 export const recipesServices = {
   getRecipes,
-  getOneRecipe,
+  getRecipeById,
   getPopularRecipes,
   addFavorite,
   removeFavorite,
