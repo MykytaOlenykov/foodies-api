@@ -1,4 +1,4 @@
-import { Area } from "../db/models/areas.js";
+import { Area } from "../db/sequelize.js";
 import { getOffset } from "../helpers/getOffset.js";
 
 export const listAreas = async (filter = {}, pagination = {}) => {

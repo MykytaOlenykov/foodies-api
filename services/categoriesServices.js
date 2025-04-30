@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { Category } from "../db/models/categories.js";
+import { Category } from "../db/sequelize.js";
 import { getOffset } from "../helpers/getOffset.js";
 
 export const listCategories = async (

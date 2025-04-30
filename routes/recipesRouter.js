@@ -9,18 +9,23 @@ import { paginationSchema } from "../schemas/commonSchemas.js";
 
 export const recipesRouter = express.Router();
 
-recipesRouter.get("/favorites", authenticate, validateQueryString(paginationSchema), recipesControllers.getMyFavorites);
+recipesRouter.get(
+  "/favorites",
+  authenticate,
+  validateQueryString(paginationSchema),
+  recipesControllers.getMyFavorites
+);
 
 recipesRouter.post(
-    "/favorites/:recipeId",
-    authenticate,
-    validateParams(updateFavoriteByIdSchema),
-    recipesControllers.addFavoriteRecipe
+  "/favorites/:recipeId",
+  authenticate,
+  validateParams(updateFavoriteByIdSchema),
+  recipesControllers.addFavoriteRecipe
 );
 
 recipesRouter.delete(
-    "/favorites/:recipeId",
-    authenticate,
-    validateParams(updateFavoriteByIdSchema),
-    recipesControllers.removeFavoriteRecipe
+  "/favorites/:recipeId",
+  authenticate,
+  validateParams(updateFavoriteByIdSchema),
+  recipesControllers.removeFavoriteRecipe
 );
