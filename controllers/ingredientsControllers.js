@@ -6,5 +6,5 @@ export const getAllIngredients = ctrlWrapper(async (req, res) => {
 
   const { ingredients, total } = await listIngredients({}, { page, limit });
 
-  res.status(200).json({ total, result: ingredients });
+  res.status(200).json({ data: { total, ingredients } });
 });

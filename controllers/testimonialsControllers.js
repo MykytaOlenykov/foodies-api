@@ -10,17 +10,16 @@ export const getAllTestimonials = ctrlWrapper(async (req, res) => {
 
   const { testimonials, total } = await listTestimonials({}, { page, limit });
 
-  res.status(200).json({ total, result: testimonials });
+  res.status(200).json({ data: { total, testimonials } });
 });
 
 export const createTestimonialController = ctrlWrapper(async (req, res) => {
   const { id } = req.user;
-  const { testimonial } = req.body;
 
-  const newTestimonial = await createTestimonial({
-    testimonial,
+  const testimonial = await createTestimonial({
+    testimonial: req.body.testimonial,
     ownerId: id,
   });
 
-  res.status(201).json(newTestimonial);
+  res.status(201).json({ data: { testimonial } });
 });

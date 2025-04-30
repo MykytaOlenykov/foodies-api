@@ -16,5 +16,5 @@ export const getAllCategories = ctrlWrapper(async (req, res) => {
     { by: sort, order: order.toUpperCase() } // sorting
   );
 
-  res.status(200).json({ total, result: categories });
+  res.status(200).json({ data: { total, categories } });
 });
