@@ -2,13 +2,13 @@ import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 import { recipesServices } from "../services/recipesServices.js";
 import { HttpError } from "../helpers/HttpError.js";
 
-const getFilteredRecipesController = async (req, res) => {
+const getFilteredRecipes = async (req, res) => {
   const { category, ingredient, area, page = 1, limit = 10, sort } = req.query;
   const data = await recipesServices.getRecipes({ category, ingredient, area, page, limit, sort });
   res.json(data);
 };
 
-const getRecipeByIdController = async (req, res) => {
+const getRecipeById = async (req, res) => {
   const { id } = req.params;
   const data = await recipesServices.getOneRecipe({ id });
 
@@ -19,14 +19,14 @@ const getRecipeByIdController = async (req, res) => {
   res.json(data);
 };
 
-const getPopularRecipesController = async (req, res) => {
+const getPopularRecipes = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   const data = await recipesServices.getPopularRecipes({ page, limit });
   res.json(data);
 };
 
 export const recipesController = {
-  getFilteredRecipesController: ctrlWrapper(getFilteredRecipesController),
-  getRecipeByIdController: ctrlWrapper(getRecipeByIdController),
-  getPopularRecipesController: ctrlWrapper(getPopularRecipesController),
+  getFilteredRecipes: ctrlWrapper(getFilteredRecipes),
+  getRecipeById: ctrlWrapper(getRecipeById),
+  getPopularRecipes: ctrlWrapper(getPopularRecipes),
 };

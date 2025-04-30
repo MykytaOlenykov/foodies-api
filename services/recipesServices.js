@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { Recipe } from "../db/models/recipes.js";
+import { getOffset } from "../helpers/getOffset.js";
 
 
 
@@ -24,7 +25,7 @@ const getRecipes = async ({ category, ingredient, area, page, limit, sort, popul
   if (category) where.categoryId = category;
   if (area) where.areaId = area;
 
-  const offset = (page - 1) * limit;
+  const offset = getOffset(page, limit);
   const include = [];
 
   if (ingredient) {
@@ -121,9 +122,8 @@ const getRecipes = async ({ category, ingredient, area, page, limit, sort, popul
 * @param {Object} query - The search term (e.g. { id: 1 })
 * @returns {Object|null} The recipe found or null
 */
-const getOneRecipe = (query) => {
-  return Recipe.findOne({
-    where: query,
+const getOneRecipe = async({id}) => {
+   const recipe  = await Recipe.findByPk(id,{
     include: [
       {
         model: Recipe.sequelize.models.Ingredient,
@@ -138,6 +138,8 @@ const getOneRecipe = (query) => {
       },
     ],
   });
+  if (!recipe) throw HttpError(404, "Not found");
+  return recipe 
 };
 
 
