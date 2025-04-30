@@ -2,15 +2,9 @@ import { UserFavoriteRecipe } from "../db/models/userFavoriteRecipes.js";
 import { User } from "../db/models/users.js";
 import { HttpError } from "../helpers/HttpError.js";
 
-export const updateUserFavoriteStatus = async ({ userId, recipeId, favorite }) => {
-    const where = { userId, recipeId };
+export const addFavorite = async (where) => await UserFavoriteRecipe.findOrCreate({ where });
 
-    if (favorite) {
-        await UserFavoriteRecipe.findOrCreate({ where });
-    } else {
-        await UserFavoriteRecipe.destroy({ where });
-    }
-};
+export const removeFavorite = async (where) => await UserFavoriteRecipe.destroy({ where });
 
 export const getUserFavoriteRecipes = async (userId, settings) => {
     const { page, limit, offset } = settings;

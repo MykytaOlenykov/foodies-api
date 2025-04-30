@@ -1,6 +1,6 @@
 import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 import { getOffset } from "../helpers/getOffset.js";
-import { getUserFavoriteRecipes, updateUserFavoriteStatus } from "../services/recipesServices.js";
+import { addFavorite, getUserFavoriteRecipes, removeFavorite } from "../services/recipesServices.js";
 
 const getFavorites = async (req, res) => {
     const { id: userId } = req.user;
@@ -12,17 +12,26 @@ const getFavorites = async (req, res) => {
     res.status(200).json({ data });
 };
 
-const updateFavoriteStatus = async (req, res, next) => {
-    const { recipeId: recipeId } = req.params;
-    const { favorite } = req.body;
+const addFavoriteRecipe = async (req, res) => {
     const { id: userId } = req.user;
+    const { recipeId } = req.params;
 
-    await updateUserFavoriteStatus({ userId, recipeId, favorite });
+    await addFavorite({ userId, recipeId });
 
-    res.status(200).json("Favorite status updated");
+    res.status(201).json({ message: "Recipe added to favorites" });
+};
+
+const removeFavoriteRecipe = async (req, res) => {
+    const { id: userId } = req.user;
+    const { recipeId } = req.params;
+
+    await removeFavorite({ userId, recipeId });
+
+    res.status(204).json({ message: "Recipe removed from favorites" });
 };
 
 export const recipesControllers = {
-    updateFavoriteStatus: ctrlWrapper(updateFavoriteStatus),
     getMyFavorites: ctrlWrapper(getFavorites),
+    addFavoriteRecipe: ctrlWrapper(addFavoriteRecipe),
+    removeFavoriteRecipe: ctrlWrapper(removeFavoriteRecipe),
 };
