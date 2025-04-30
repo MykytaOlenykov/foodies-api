@@ -26,7 +26,7 @@ const updateAvatar = async (req, res) => {
 };
 
 const getFollowers = async (req, res) => {
-  const { id: userId } = req.user;
+  const { userId } = req.params;
 
   const followers = await usersServices.getFollowers(userId);
 

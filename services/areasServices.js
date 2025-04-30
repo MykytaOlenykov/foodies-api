@@ -1,18 +1,16 @@
-import { Area } from "../db/models/areas.js";
+import { Area } from "../db/sequelize.js";
+import { getOffset } from "../helpers/getOffset.js";
 
 export const listAreas = async (filter = {}, pagination = {}) => {
   const { page = 1, limit = 10 } = pagination;
-  const normalizedLimit = Number(limit);
-  const offset = (Number(page) - 1) * normalizedLimit;
+  const offset = getOffset(page, limit);
 
-  return await Area.findAll({
+  const { rows, count } = await Area.findAndCountAll({
     where: filter,
     offset,
-    limit: normalizedLimit,
+    limit,
     order: [["name", "ASC"]],
   });
-};
 
-export const countAreas = async () => {
-  return await Area.count();
+  return { areas: rows, total: count };
 };

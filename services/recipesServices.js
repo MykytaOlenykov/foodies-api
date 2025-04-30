@@ -1,26 +1,33 @@
 import { Sequelize } from "sequelize";
-import { Recipe } from "../db/models/recipes.js";
+import { UserFavoriteRecipe, Recipe } from "../db/sequelize.js";
 import { getOffset } from "../helpers/getOffset.js";
-
-
+import { HttpError } from "../helpers/HttpError.js";
 
 /**
-* Gets a list of recipes with filtering, sorting and pagination.
-* Can sort by popularity if `popular: true` flag is passed.
-*
-* @param {Object} options - Query parameters
-* @param {number} [options.category] - Recipe category ID
-* @param {string} [options.ingredient] - Ingredient name to filter
-* @param {number} [options.area] - Origin region ID
-* @param {number} [options.page=1] - Page number for pagination
-* @param {number} [options.limit=10] - Number of recipes per page
-* @param {string} [options.sort] - Sort by, such as 'title_ASC' or 'time_DESC'
-* @param {boolean} [options.popular=false] - If true, sort by number of fans
-*
-* @returns {Object} Result with array of recipes, number of pages, and current page
-*/
+ * Gets a list of recipes with filtering, sorting and pagination.
+ * Can sort by popularity if `popular: true` flag is passed.
+ *
+ * @param {Object} options - Query parameters
+ * @param {number} [options.category] - Recipe category ID
+ * @param {string} [options.ingredient] - Ingredient name to filter
+ * @param {number} [options.area] - Origin region ID
+ * @param {number} [options.page=1] - Page number for pagination
+ * @param {number} [options.limit=10] - Number of recipes per page
+ * @param {string} [options.sort] - Sort by, such as 'title_ASC' or 'time_DESC'
+ * @param {boolean} [options.popular=false] - If true, sort by number of fans
+ *
+ * @returns {Object} Result with array of recipes, number of pages, and current page
+ */
 
-const getRecipes = async ({ category, ingredient, area, page, limit, sort, popular = false }) => {
+const getRecipes = async ({
+  category,
+  ingredient,
+  area,
+  page,
+  limit,
+  sort,
+  popular = false,
+}) => {
   const where = {};
   if (category) where.categoryId = category;
   if (area) where.areaId = area;
@@ -64,7 +71,9 @@ const getRecipes = async ({ category, ingredient, area, page, limit, sort, popul
     ...(order.length && { order }),
     ...(popular && {
       attributes: {
-        include: [[Sequelize.fn("COUNT", Sequelize.col("fans.id")), "fansCount"]],
+        include: [
+          [Sequelize.fn("COUNT", Sequelize.col("fans.id")), "fansCount"],
+        ],
       },
       group: ["Recipe.id"],
       subQuery: false,
@@ -112,16 +121,15 @@ const getRecipes = async ({ category, ingredient, area, page, limit, sort, popul
   };
 };
 
-
 /**
-* Gets a single recipe by search term.
-* Returns the recipe's ingredients and fans.
-*
-* @param {Object} query - The search term (e.g. { id: 1 })
-* @returns {Object|null} The recipe found or null
-*/
-const getOneRecipe = async({id}) => {
-   const recipe  = await Recipe.findByPk(id,{
+ * Gets a single recipe by search term.
+ * Returns the recipe's ingredients and fans.
+ *
+ * @param {Object} query - The search term (e.g. { id: 1 })
+ * @returns {Object|null} The recipe found or null
+ */
+const getOneRecipe = async ({ id }) => {
+  const recipe = await Recipe.findByPk(id, {
     include: [
       {
         model: Recipe.sequelize.models.Ingredient,
@@ -131,26 +139,66 @@ const getOneRecipe = async({id}) => {
     ],
   });
   if (!recipe) throw HttpError(404, "Not found");
-  return recipe 
+  return recipe;
 };
 
-
 /**
-* Gets a list of popular recipes by number of fans.
-* Works via `getRecipes` with the `popular: true` flag.
-*
-* @param {Object} options - Pagination options
-* @param {number} [options.page=1] - Page number
-* @param {number} [options.limit=10] - Number of recipes per page
-*
-* @returns {Object} Result with popular recipes
-*/
+ * Gets a list of popular recipes by number of fans.
+ * Works via `getRecipes` with the `popular: true` flag.
+ *
+ * @param {Object} options - Pagination options
+ * @param {number} [options.page=1] - Page number
+ * @param {number} [options.limit=10] - Number of recipes per page
+ *
+ * @returns {Object} Result with popular recipes
+ */
 const getPopularRecipes = async ({ page, limit }) => {
   return await getRecipes({ page, limit, popular: true });
+};
+
+const addFavorite = async ({ userId, recipeId }) => {
+  await UserFavoriteRecipe.findOrCreate({ where: { userId, recipeId } });
+};
+
+const removeFavorite = async ({ userId, recipeId }) => {
+  const recipe = await Recipe.findByPk(recipeId);
+
+  if (!recipe) throw HttpError(404, "Recipe not found");
+
+  const count = await UserFavoriteRecipe.destroy({
+    where: { userId, recipeId },
+  });
+
+  if (count === 0) throw HttpError(404, "Recipe not found");
+};
+
+const getUserFavoriteRecipes = async (userId, settings) => {
+  const { page = 1, limit = 10 } = settings;
+  const offset = getOffset(page, limit);
+
+  const { count, rows } = await Recipe.findAndCountAll({
+    include: [
+      {
+        model: UserFavoriteRecipe,
+        as: "userFavoriteRecipes",
+        where: { userId },
+        attributes: [],
+        required: true,
+      },
+    ],
+    attributes: ["id", "title", "thumb", "description"],
+    offset,
+    limit,
+  });
+
+  return { total: count, favoriteRecipes: rows };
 };
 
 export const recipesServices = {
   getRecipes,
   getOneRecipe,
   getPopularRecipes,
+  addFavorite,
+  removeFavorite,
+  getUserFavoriteRecipes,
 };

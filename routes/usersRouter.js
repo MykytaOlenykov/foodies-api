@@ -4,7 +4,10 @@ import { authenticate } from "../middlewares/authenticate.js";
 import { imageUpload } from "../middlewares/imageUpload.js";
 import { usersControllers } from "../controllers/usersControllers.js";
 import { validateParams } from "../middlewares/validateParams.js";
-import { getUserByIdSchema } from "../schemas/usersSchemas.js";
+import {
+  getUserByIdSchema,
+  getFollowersParamsSchema,
+} from "../schemas/usersSchemas.js";
 
 export const usersRouter = express.Router();
 
@@ -15,8 +18,6 @@ usersRouter.patch(
   usersControllers.updateAvatar
 );
 
-usersRouter.get("/followers", authenticate, usersControllers.getFollowers);
-
 usersRouter.get("/following", authenticate, usersControllers.getFollowing);
 
 usersRouter.get(
@@ -24,4 +25,10 @@ usersRouter.get(
   authenticate,
   validateParams(getUserByIdSchema),
   usersControllers.getUserById
+);
+
+usersRouter.get(
+  "/:userId/followers",
+  validateParams(getFollowersParamsSchema),
+  usersControllers.getFollowers
 );
