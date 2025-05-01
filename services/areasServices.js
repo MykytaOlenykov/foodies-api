@@ -1,12 +1,18 @@
+import { Op } from "sequelize";
+
 import { Area } from "../db/sequelize.js";
 import { getOffset } from "../helpers/getOffset.js";
 
-export const listAreas = async (filter = {}, pagination = {}) => {
-  const { page = 1, limit = 10 } = pagination;
+export const listAreas = async (query) => {
+  const { page = 1, limit = 10, name } = query;
   const offset = getOffset(page, limit);
 
+  const where = {};
+
+  if (name) where.name = { [Op.iLike]: `%${name}%` };
+
   const { rows, count } = await Area.findAndCountAll({
-    where: filter,
+    where,
     offset,
     limit,
     order: [["name", "ASC"]],

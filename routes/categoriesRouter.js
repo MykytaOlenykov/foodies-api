@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { getAllCategories } from "../controllers/categoriesControllers.js";
 import { validateQueryString } from "../middlewares/validateQueryString.js";
-import { paginationSchema } from "../schemas/commonSchemas.js";
+import { getAllCategoriesQueryStringSchema } from "../schemas/categoriesSchemas.js";
 
 const categoriesRouter = Router();
 
 categoriesRouter.get(
   "/",
-  validateQueryString(paginationSchema),
+  validateQueryString(getAllCategoriesQueryStringSchema),
   getAllCategories
 );
 
