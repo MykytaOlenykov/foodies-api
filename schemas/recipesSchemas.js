@@ -14,4 +14,5 @@ export const getRecipesQueryStringSchema = paginationSchema.keys({
   categoryId: Joi.number().integer().optional(),
   areaId: Joi.number().integer().optional(),
   ingredientId: Joi.number().integer().optional(),
+  ownerId: Joi.number().integer().optional(),
 });

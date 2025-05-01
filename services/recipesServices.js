@@ -18,6 +18,7 @@ import { HttpError } from "../helpers/HttpError.js";
  * @param {number} [options.categoryId] - Recipe category ID
  * @param {string} [options.ingredientId] - Ingredient name to filter
  * @param {number} [options.areaId] - Origin region ID
+ * @param {number} [options.ownerId] - Origin user ID
  * @param {number} [options.page=1] - Page number for pagination
  * @param {number} [options.limit=10] - Number of recipes per page
  * @param {string} [options.sort] - Sort by, such as 'title_ASC' or 'time_DESC'
@@ -25,11 +26,11 @@ import { HttpError } from "../helpers/HttpError.js";
  *
  * @returns {Object} Result with array of recipes, number of pages, and current page
  */
-
 const getRecipes = async ({
   categoryId,
   areaId,
   ingredientId,
+  ownerId,
   page = 1,
   limit = 10,
 }) => {
@@ -38,6 +39,7 @@ const getRecipes = async ({
   if (areaId) where.areaId = areaId;
   if (categoryId) where.categoryId = categoryId;
   if (ingredientId) where.ingredientId = ingredientId;
+  if (ownerId) where.ownerId = ownerId;
 
   const { rows, count } = await Recipe.findAndCountAll({
     where,
