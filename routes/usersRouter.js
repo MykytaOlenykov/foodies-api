@@ -7,6 +7,8 @@ import { validateParams } from "../middlewares/validateParams.js";
 import {
   getUserByIdSchema,
   getFollowersParamsSchema,
+  followUserParamsSchema,
+  unFollowUserParamsSchema,
 } from "../schemas/usersSchemas.js";
 
 export const usersRouter = express.Router();
@@ -30,14 +32,16 @@ usersRouter.get(
 usersRouter.post(
   "/following/:userId",
   authenticate,
+  validateParams(followUserParamsSchema),
   usersControllers.followUser
 );
 
 usersRouter.delete(
   "/following/:userId",
   authenticate,
+  validateParams(unFollowUserParamsSchema),
   usersControllers.unFollowUser
-); 
+);
 
 usersRouter.get(
   "/:userId/followers",

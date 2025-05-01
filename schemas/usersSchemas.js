@@ -7,3 +7,11 @@ export const getUserByIdSchema = Joi.object({
 export const getFollowersParamsSchema = Joi.object({
   userId: Joi.number().integer().required(),
 });
+
+export const followUserParamsSchema = Joi.object({
+  userId: Joi.number().integer().required(),
+});
+
+export const unFollowUserParamsSchema = Joi.object({
+  userId: Joi.number().integer().required(),
+});

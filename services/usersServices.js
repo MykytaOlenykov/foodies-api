@@ -158,12 +158,16 @@ const getFollowing = async (userId) => {
 };
 
 const followUser = async (userId, followId) => {
+  if (userId === followId) {
+    throw HttpError(400, "You can't follow yourself");
+  }
+
   const [user, followUser] = await Promise.all([
     User.findByPk(userId),
     User.findByPk(followId),
   ]);
 
-  if (!followUser) {
+  if (!user || !followUser) {
     throw HttpError(404, "User not found");
   }
 
@@ -171,6 +175,10 @@ const followUser = async (userId, followId) => {
 };
 
 const unFollowUser = async (userId, followId) => {
+  if (userId === followId) {
+    throw HttpError(400, "You can't unfollow yourself");
+  }
+
   const [user, unFollowUser] = await Promise.all([
     User.findByPk(userId),
     User.findByPk(followId),

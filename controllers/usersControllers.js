@@ -45,25 +45,18 @@ const followUser = async (req, res) => {
   const { userId: followId } = req.params;
   const { id: userId } = req.user;
 
-  if (userId === followId) {
-    throw HttpError(400, "You can't follow yourself");
-  }
+  await usersServices.followUser(userId, followId);
 
-  const followUser = await usersServices.followUser(userId, followId);
-
-  res.status(201).json({ message: "The user has been followed" });
+  res.status(200).json({ message: "The user has been followed" });
 };
 
 const unFollowUser = async (req, res) => {
   const { userId: followId } = req.params;
   const { id: userId } = req.user;
 
-  if (userId === followId) {
-    throw HttpError(400, "You can't unfollow yourself");
-  }
   await usersServices.unFollowUser(userId, followId);
 
-  res.sendStatus(200).json({ message: "The user has been unfollowed" });
+  res.status(200).json({ message: "The user has been unfollowed" });
 };
 
 export const usersControllers = {
