@@ -52,6 +52,7 @@ recipesRouter.get(
 
 recipesRouter.delete(
   "/:recipeId",
+  authenticate,
   validateParams(deleteRecipeParamsSchema),
   recipesControllers.deleteRecipeById
 );
