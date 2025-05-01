@@ -4,24 +4,21 @@ import { validateBody } from "../middlewares/validateBody.js";
 import { validateQueryString } from "../middlewares/validateQueryString.js";
 import { createTestimonialSchema } from "../schemas/testimonialSchema.js";
 import { paginationSchema } from "../schemas/commonSchemas.js";
-import {
-  getAllTestimonials,
-  createTestimonialController,
-} from "../controllers/testimonialsControllers.js";
+import { testimonialsControllers } from "../controllers/testimonialsControllers.js";
 
 const testimonialsRouter = Router();
 
 testimonialsRouter.get(
   "/",
   validateQueryString(paginationSchema),
-  getAllTestimonials
+  testimonialsControllers.getAllTestimonials
 );
 
 testimonialsRouter.post(
   "/",
   authenticate,
   validateBody(createTestimonialSchema),
-  createTestimonialController
+  testimonialsControllers.createTestimonialController
 );
 
 export { testimonialsRouter };

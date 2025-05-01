@@ -3,7 +3,7 @@ import { Op } from "sequelize";
 import { Category } from "../db/sequelize.js";
 import { getOffset } from "../helpers/getOffset.js";
 
-export const listCategories = async (query) => {
+const listCategories = async (query) => {
   const { page = 1, limit = 10, name } = query;
   const offset = getOffset(page, limit);
 
@@ -19,4 +19,8 @@ export const listCategories = async (query) => {
   });
 
   return { categories: rows, total: count };
+};
+
+export const categoriesServices = {
+  listCategories,
 };

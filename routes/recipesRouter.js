@@ -4,10 +4,12 @@ import { validateQueryString } from "../middlewares/validateQueryString.js";
 import { recipesControllers } from "../controllers/recipesControllers.js";
 import { authenticate } from "../middlewares/authenticate.js";
 import { validateParams } from "../middlewares/validateParams.js";
+import { validateBody } from "../middlewares/validateBody.js";
 import {
   updateFavoriteByIdSchema,
   getRecipesQueryStringSchema,
   getRecipeByIdParamsSchema,
+  createRecipeBodySchema,
 } from "../schemas/recipesSchemas.js";
 import { paginationSchema } from "../schemas/commonSchemas.js";
 
@@ -17,6 +19,12 @@ recipesRouter.get(
   "/",
   validateQueryString(getRecipesQueryStringSchema),
   recipesControllers.getRecipes
+);
+
+recipesRouter.post(
+  "/",
+  validateBody(createRecipeBodySchema),
+  recipesControllers.createRecipe
 );
 
 recipesRouter.get(

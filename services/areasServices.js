@@ -3,7 +3,7 @@ import { Op } from "sequelize";
 import { Area } from "../db/sequelize.js";
 import { getOffset } from "../helpers/getOffset.js";
 
-export const listAreas = async (query) => {
+const listAreas = async (query) => {
   const { page = 1, limit = 10, name } = query;
   const offset = getOffset(page, limit);
 
@@ -19,4 +19,8 @@ export const listAreas = async (query) => {
   });
 
   return { areas: rows, total: count };
+};
+
+export const areasServices = {
+  listAreas,
 };

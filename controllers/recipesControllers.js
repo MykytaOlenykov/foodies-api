@@ -52,6 +52,8 @@ const removeFavoriteRecipe = async (req, res) => {
   res.status(200).json({ message: "Recipe removed from favorites" });
 };
 
+const createRecipe = async () => {};
+
 export const recipesControllers = {
   getRecipes: ctrlWrapper(getRecipes),
   getRecipeById: ctrlWrapper(getRecipeById),
@@ -59,4 +61,5 @@ export const recipesControllers = {
   getFavoriteRecipes: ctrlWrapper(getFavoriteRecipes),
   addFavoriteRecipe: ctrlWrapper(addFavoriteRecipe),
   removeFavoriteRecipe: ctrlWrapper(removeFavoriteRecipe),
+  createRecipe: ctrlWrapper(createRecipe),
 };
