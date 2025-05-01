@@ -47,7 +47,7 @@ const followUser = async (req, res) => {
 
   await usersServices.followUser(userId, followId);
 
-  res.status(200).json({ message: "The user has been followed" });
+  res.status(200).json({ data: { message: "The user has been followed" } });
 };
 
 const unFollowUser = async (req, res) => {
@@ -56,7 +56,7 @@ const unFollowUser = async (req, res) => {
 
   await usersServices.unFollowUser(userId, followId);
 
-  res.status(200).json({ message: "The user has been unfollowed" });
+  res.status(200).json({ data: { message: "The user has been unfollowed" } });
 };
 
 export const usersControllers = {

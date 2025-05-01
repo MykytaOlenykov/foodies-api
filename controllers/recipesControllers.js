@@ -40,7 +40,7 @@ const addFavoriteRecipe = async (req, res) => {
 
   await recipesServices.addFavorite({ userId, recipeId });
 
-  res.status(200).json({ message: "Recipe added to favorites" });
+  res.status(200).json({ data: { message: "Recipe added to favorites" } });
 };
 
 const removeFavoriteRecipe = async (req, res) => {
@@ -49,7 +49,21 @@ const removeFavoriteRecipe = async (req, res) => {
 
   await recipesServices.removeFavorite({ userId, recipeId });
 
-  res.status(200).json({ message: "Recipe removed from favorites" });
+  res.status(200).json({ data: { message: "Recipe removed from favorites" } });
+};
+
+const createRecipe = async (req, res) => {
+  const recipe = await recipesServices.createRecipe({
+    body: req.body,
+    file: req.file,
+    user: req.user,
+  });
+  res.status(201).json({ data: { recipe } });
+};
+
+const deleteRecipeById = async (req, res) => {
+  await recipesServices.deleteRecipeById(req.params.recipeId);
+  res.status(204).send();
 };
 
 export const recipesControllers = {
@@ -59,4 +73,6 @@ export const recipesControllers = {
   getFavoriteRecipes: ctrlWrapper(getFavoriteRecipes),
   addFavoriteRecipe: ctrlWrapper(addFavoriteRecipe),
   removeFavoriteRecipe: ctrlWrapper(removeFavoriteRecipe),
+  createRecipe: ctrlWrapper(createRecipe),
+  deleteRecipeById: ctrlWrapper(deleteRecipeById),
 };

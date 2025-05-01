@@ -5,6 +5,7 @@ import sharp from "sharp";
 
 const fileCategories = {
   avatars: "avatars",
+  recipes: "recipes",
 };
 
 const staticDir = path.resolve("public");
@@ -21,24 +22,34 @@ const removeFile = async (filePath, isFullPath) => {
   }
 };
 
-const processAvatar = async (file) => {
+const processImage = async (file, category) => {
   const { filename, path: tmpUpload } = file;
   const fileFormat = path.extname(filename).toLowerCase().slice(1);
 
-  const avatarsDir = path.join(staticDir, fileCategories.avatars);
-  const resultUpload = path.join(avatarsDir, filename);
+  const categoryDir = path.join(staticDir, category);
+  await fs.mkdir(categoryDir, { recursive: true });
+  const resultUpload = path.join(categoryDir, filename);
 
   await sharp(tmpUpload)
     .toFormat(fileFormat, { quality: 80 })
     .toFile(resultUpload);
 
   await removeFile(tmpUpload, true);
-  const avatarURL = path.join(path.sep, fileCategories.avatars, filename);
+  const url = path.join(path.sep, category, filename);
 
-  return avatarURL;
+  return url;
+};
+
+const processAvatar = async (file) => {
+  return await processImage(file, fileCategories.avatars);
+};
+
+const processRecipeThumb = async (file) => {
+  return await processImage(file, fileCategories.recipes);
 };
 
 export const filesServices = {
   removeFile,
   processAvatar,
+  processRecipeThumb,
 };

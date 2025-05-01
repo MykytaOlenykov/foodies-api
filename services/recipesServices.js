@@ -6,9 +6,11 @@ import {
   Area,
   Category,
   Ingredient,
+  RecipeIngredient,
 } from "../db/sequelize.js";
 import { getOffset } from "../helpers/getOffset.js";
 import { HttpError } from "../helpers/HttpError.js";
+import { filesServices } from "./filesServices.js";
 
 /**
  * Gets a list of recipes with filtering, sorting and pagination.
@@ -210,6 +212,37 @@ const getUserFavoriteRecipes = async (userId, settings) => {
   return { total: count, favoriteRecipes: rows };
 };
 
+const createRecipe = async ({ body, file, user }) => {
+  if (!file) {
+    throw HttpError(400, "No file uploaded");
+  }
+
+  const thumb = await filesServices.processRecipeThumb(file);
+
+  const { ingredients, ...otherData } = body;
+
+  const recipeIngredients = JSON.parse(ingredients).map(({ id, measure }) => ({
+    ingredientId: id,
+    measure,
+  }));
+
+  const recipe = await Recipe.create(
+    {
+      ...otherData,
+      thumb,
+      ownerId: user.id,
+      recipeIngredients,
+    },
+    { include: [{ model: RecipeIngredient, as: "recipeIngredients" }] }
+  );
+
+  return recipe;
+};
+
+const deleteRecipeById = async (recipeId) => {
+  await Recipe.destroy({ where: { id: recipeId } });
+};
+
 export const recipesServices = {
   getRecipes,
   getRecipeById,
@@ -217,4 +250,6 @@ export const recipesServices = {
   addFavorite,
   removeFavorite,
   getUserFavoriteRecipes,
+  createRecipe,
+  deleteRecipeById,
 };

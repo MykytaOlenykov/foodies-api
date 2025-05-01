@@ -1,8 +1,14 @@
-import { listIngredients } from "../services/ingredientsServices.js";
+import { ingredientsServices } from "../services/ingredientsServices.js";
 import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 
-export const getAllIngredients = ctrlWrapper(async (req, res) => {
-  const { ingredients, total } = await listIngredients(req.query);
+const getAllIngredients = async (req, res) => {
+  const { ingredients, total } = await ingredientsServices.listIngredients(
+    req.query
+  );
 
   res.status(200).json({ data: { total, ingredients } });
-});
+};
+
+export const ingredientsControllers = {
+  getAllIngredients: ctrlWrapper(getAllIngredients),
+};
