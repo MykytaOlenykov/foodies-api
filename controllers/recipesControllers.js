@@ -40,7 +40,7 @@ const addFavoriteRecipe = async (req, res) => {
 
   await recipesServices.addFavorite({ userId, recipeId });
 
-  res.status(200).json({ message: "Recipe added to favorites" });
+  res.status(200).json({ data: { message: "Recipe added to favorites" } });
 };
 
 const removeFavoriteRecipe = async (req, res) => {
@@ -49,7 +49,7 @@ const removeFavoriteRecipe = async (req, res) => {
 
   await recipesServices.removeFavorite({ userId, recipeId });
 
-  res.status(200).json({ message: "Recipe removed from favorites" });
+  res.status(200).json({ data: { message: "Recipe removed from favorites" } });
 };
 
 const createRecipe = async (req, res) => {
