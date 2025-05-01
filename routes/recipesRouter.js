@@ -5,6 +5,7 @@ import { recipesControllers } from "../controllers/recipesControllers.js";
 import { authenticate } from "../middlewares/authenticate.js";
 import { validateParams } from "../middlewares/validateParams.js";
 import { validateBody } from "../middlewares/validateBody.js";
+import { imageUpload } from "../middlewares/imageUpload.js";
 import {
   updateFavoriteByIdSchema,
   getRecipesQueryStringSchema,
@@ -23,7 +24,9 @@ recipesRouter.get(
 
 recipesRouter.post(
   "/",
+  authenticate,
   validateBody(createRecipeBodySchema),
+  imageUpload.single("thumb"),
   recipesControllers.createRecipe
 );
 

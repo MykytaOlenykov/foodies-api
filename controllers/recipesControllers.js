@@ -52,7 +52,14 @@ const removeFavoriteRecipe = async (req, res) => {
   res.status(200).json({ message: "Recipe removed from favorites" });
 };
 
-const createRecipe = async () => {};
+const createRecipe = async (req, res) => {
+  const recipe = await recipesServices.createRecipe({
+    body: req.body,
+    file: req.file,
+    user: req.user,
+  });
+  res.status(201).json({ data: { recipe } });
+};
 
 export const recipesControllers = {
   getRecipes: ctrlWrapper(getRecipes),
