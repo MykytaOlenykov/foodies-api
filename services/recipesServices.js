@@ -240,11 +240,20 @@ const createRecipe = async ({ body, file, user }) => {
 };
 
 const deleteRecipeById = async (recipeId, user) => {
-  const recipe = await Recipe.findByPk(recipeId);
+  const transaction = await sequelize.transaction();
+
+  const recipe = await Recipe.findByPk(recipeId, { transaction });
   if (!recipe) throw HttpError(404, "Recipe not found");
   if (recipe.ownerId !== user.id) throw HttpError(403);
-  await filesServices.removeFile(recipe.thumb);
-  await recipe.destroy();
+
+  try {
+    await filesServices.removeFile(recipe.thumb);
+    await recipe.destroy({ transaction });
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 export const recipesServices = {
