@@ -62,7 +62,7 @@ const createRecipe = async (req, res) => {
 };
 
 const deleteRecipeById = async (req, res) => {
-  await recipesServices.deleteRecipeById(req.params.recipeId);
+  await recipesServices.deleteRecipeById(req.params.recipeId, req.user);
   res.status(204).send();
 };
 

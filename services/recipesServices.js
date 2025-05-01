@@ -239,8 +239,11 @@ const createRecipe = async ({ body, file, user }) => {
   return recipe;
 };
 
-const deleteRecipeById = async (recipeId) => {
-  await Recipe.destroy({ where: { id: recipeId } });
+const deleteRecipeById = async (recipeId, user) => {
+  const recipe = await Recipe.findByPk(recipeId);
+  if (!recipe) throw HttpError(404, "Recipe not found");
+  if (recipe.ownerId !== user.Id) throw HttpError(403);
+  await recipe.destroy();
 };
 
 export const recipesServices = {
