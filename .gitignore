@@ -137,3 +137,4 @@ dist
 volumes
 .DS_Store
 public/avatars/*
+public/recipes/*

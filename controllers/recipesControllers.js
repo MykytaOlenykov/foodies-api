@@ -61,6 +61,11 @@ const createRecipe = async (req, res) => {
   res.status(201).json({ data: { recipe } });
 };
 
+const deleteRecipeById = async (req, res) => {
+  await recipesServices.deleteRecipeById(req.params.recipeId);
+  res.status(204).send();
+};
+
 export const recipesControllers = {
   getRecipes: ctrlWrapper(getRecipes),
   getRecipeById: ctrlWrapper(getRecipeById),
@@ -69,4 +74,5 @@ export const recipesControllers = {
   addFavoriteRecipe: ctrlWrapper(addFavoriteRecipe),
   removeFavoriteRecipe: ctrlWrapper(removeFavoriteRecipe),
   createRecipe: ctrlWrapper(createRecipe),
+  deleteRecipeById: ctrlWrapper(deleteRecipeById),
 };

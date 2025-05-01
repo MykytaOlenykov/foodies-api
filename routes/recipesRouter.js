@@ -11,6 +11,7 @@ import {
   getRecipesQueryStringSchema,
   getRecipeByIdParamsSchema,
   createRecipeBodySchema,
+  deleteRecipeParamsSchema,
 } from "../schemas/recipesSchemas.js";
 import { paginationSchema } from "../schemas/commonSchemas.js";
 
@@ -47,6 +48,12 @@ recipesRouter.get(
   "/:recipeId",
   validateParams(getRecipeByIdParamsSchema),
   recipesControllers.getRecipeById
+);
+
+recipesRouter.delete(
+  "/:recipeId",
+  validateParams(deleteRecipeParamsSchema),
+  recipesControllers.deleteRecipeById
 );
 
 recipesRouter.post(

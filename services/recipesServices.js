@@ -239,6 +239,10 @@ const createRecipe = async ({ body, file, user }) => {
   return recipe;
 };
 
+const deleteRecipeById = async (recipeId) => {
+  await Recipe.destroy({ where: { id: recipeId } });
+};
+
 export const recipesServices = {
   getRecipes,
   getRecipeById,
@@ -247,4 +251,5 @@ export const recipesServices = {
   removeFavorite,
   getUserFavoriteRecipes,
   createRecipe,
+  deleteRecipeById,
 };
