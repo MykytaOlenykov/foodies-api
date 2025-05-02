@@ -4,6 +4,8 @@ import { authenticate } from "../middlewares/authenticate.js";
 import { imageUpload } from "../middlewares/imageUpload.js";
 import { usersControllers } from "../controllers/usersControllers.js";
 import { validateParams } from "../middlewares/validateParams.js";
+import { validateQueryString } from "../middlewares/validateQueryString.js";
+import { paginationSchema } from "../schemas/commonSchemas.js";
 import {
   getUserByIdSchema,
   getFollowersParamsSchema,
@@ -20,7 +22,12 @@ usersRouter.patch(
   usersControllers.updateAvatar
 );
 
-usersRouter.get("/following", authenticate, usersControllers.getFollowing);
+usersRouter.get(
+  "/following",
+  authenticate,
+  validateQueryString(paginationSchema),
+  usersControllers.getFollowing
+);
 
 usersRouter.get(
   "/:userId",
@@ -46,5 +53,6 @@ usersRouter.delete(
 usersRouter.get(
   "/:userId/followers",
   validateParams(getFollowersParamsSchema),
+  validateQueryString(paginationSchema),
   usersControllers.getFollowers
 );

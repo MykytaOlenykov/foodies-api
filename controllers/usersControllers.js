@@ -22,7 +22,10 @@ const updateAvatar = async (req, res) => {
 const getFollowers = async (req, res) => {
   const { userId } = req.params;
 
-  const { followers, total } = await usersServices.getFollowers(userId);
+  const { followers, total } = await usersServices.getFollowers(
+    userId,
+    req.query
+  );
 
   res.status(200).json({ data: { followers, total } });
 };
@@ -30,7 +33,10 @@ const getFollowers = async (req, res) => {
 const getFollowing = async (req, res) => {
   const { id: userId } = req.user;
 
-  const { following, total } = await usersServices.getFollowing(userId);
+  const { following, total } = await usersServices.getFollowing(
+    userId,
+    req.query
+  );
 
   res.status(200).json({ data: { following, total } });
 };

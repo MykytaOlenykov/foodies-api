@@ -1,4 +1,5 @@
 import { HttpError } from "../helpers/HttpError.js";
+import { getOffset } from "../helpers/getOffset.js";
 import { sequelize, User, Recipe, UserFollower } from "../db/sequelize.js";
 import { filesServices } from "./filesServices.js";
 
@@ -99,7 +100,9 @@ const updateUserAvatar = async (userId, file) => {
   return user;
 };
 
-const getFollowers = async (userId) => {
+const getFollowers = async (userId, query) => {
+  const { page = 1, limit = 10 } = query;
+
   const [user, total] = await Promise.all([
     User.findByPk(userId, {
       include: [
@@ -130,7 +133,9 @@ const getFollowers = async (userId) => {
   return { followers: user.followers, total };
 };
 
-const getFollowing = async (userId) => {
+const getFollowing = async (userId, query) => {
+  const { page = 1, limit = 10 } = query;
+
   const [user, total] = await Promise.all([
     User.findByPk(userId, {
       include: [
