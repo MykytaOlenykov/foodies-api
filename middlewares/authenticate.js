@@ -27,6 +27,11 @@ export const authenticate = async (req, _, next) => {
 
     next();
   } catch (error) {
+    if (!error.status) {
+      error.status = 401;
+      error.message = "Unauthorized";
+    }
+
     next(error);
   }
 };
