@@ -37,19 +37,31 @@ const getRecipes = async ({
   limit = 10,
 }) => {
   const where = {};
+  const include = [{ model: User, as: "owner", attributes: ["id", "name"] }];
 
   if (areaId) where.areaId = areaId;
   if (categoryId) where.categoryId = categoryId;
-  if (ingredientId) where.ingredientId = ingredientId;
   if (ownerId) where.ownerId = ownerId;
+
+  if (ingredientId) {
+    include.push({
+      model: Ingredient,
+      as: "ingredients",
+      where: { id: ingredientId },
+      through: { attributes: [] },
+      attributes: [],
+      required: true,
+    });
+  }
 
   const { rows, count } = await Recipe.findAndCountAll({
     where,
     attributes: ["id", "title", "description", "createdAt", "updatedAt"],
-    include: { model: User, as: "owner", attributes: ["id", "name"] },
+    include,
     limit: limit,
     offset: getOffset(page, limit),
     order: [["id", "DESC"]],
+    distinct: true,
   });
 
   return { total: count, recipes: rows };
