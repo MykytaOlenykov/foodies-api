@@ -220,6 +220,7 @@ const getUserFavoriteRecipes = async (userId, settings) => {
     attributes: ["id", "title", "description", "createdAt", "updatedAt"],
     offset,
     limit,
+    order: [["id", "DESC"]],
   });
 
   return { total: count, favoriteRecipes: rows };

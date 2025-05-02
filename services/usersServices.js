@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import { HttpError } from "../helpers/HttpError.js";
 import { getOffset } from "../helpers/getOffset.js";
 import { sequelize, User, Recipe, UserFollower } from "../db/sequelize.js";
@@ -103,67 +105,119 @@ const updateUserAvatar = async (userId, file) => {
 const getFollowers = async (userId, query) => {
   const { page = 1, limit = 10 } = query;
 
-  const [user, total] = await Promise.all([
-    User.findByPk(userId, {
+  const [followers, total] = await Promise.all([
+    User.findAll({
+      attributes: ["id", "name", "email", "avatarURL"],
       include: [
         {
           model: User,
-          as: "followers",
-          attributes: ["id", "name", "email", "avatarURL"],
-          through: { attributes: [] },
-          include: [
-            {
-              model: Recipe,
-              as: "recipes",
-              foreignKey: "ownerId",
-              attributes: ["id", "thumb"],
-              limit: 4,
-            },
-          ],
+          as: "following",
+          attributes: [],
+          where: { id: userId },
+        },
+        {
+          model: Recipe,
+          as: "recipes",
+          foreignKey: "ownerId",
+          attributes: ["id", "thumb"],
+          limit: 4,
         },
       ],
+      order: [["id", "DESC"]],
+      offset: getOffset(page, limit),
+      limit,
+      group: [
+        "User.id",
+        "following->UserFollower.userId",
+        "following->UserFollower.followerId",
+      ],
+      subQuery: false,
     }),
     UserFollower.count({ where: { userId } }),
   ]);
 
-  if (!user) {
-    throw HttpError(404, "User not found");
-  }
+  const recipes = await Recipe.findAll({
+    where: {
+      ownerId: { [Op.in]: followers.map(({ id }) => id) },
+    },
+    attributes: ["ownerId", [getCountFuncByColumn("id"), "recipesCount"]],
+    group: ["ownerId"],
+    raw: true,
+  });
 
-  return { followers: user.followers, total };
+  return {
+    total,
+    followers: followers.map((follower) => {
+      const followerJSON = follower.toJSON();
+      const recipesCount = recipes.find(
+        ({ ownerId }) => ownerId === followerJSON.id
+      )?.recipesCount;
+
+      return {
+        ...followerJSON,
+        recipesCount: recipesCount ? Number(recipesCount) : 0,
+      };
+    }),
+  };
 };
 
 const getFollowing = async (userId, query) => {
   const { page = 1, limit = 10 } = query;
 
-  const [user, total] = await Promise.all([
-    User.findByPk(userId, {
+  const [following, total] = await Promise.all([
+    User.findAll({
+      attributes: ["id", "name", "email", "avatarURL"],
       include: [
         {
           model: User,
-          as: "following",
-          attributes: ["id", "name", "email", "avatarURL"],
-          through: { attributes: [] },
-          include: [
-            {
-              model: Recipe,
-              as: "recipes",
-              foreignKey: "ownerId",
-              attributes: ["id", "thumb"],
-              limit: 4,
-            },
-          ],
+          as: "followers",
+          attributes: [],
+          where: { id: userId },
+        },
+        {
+          model: Recipe,
+          as: "recipes",
+          foreignKey: "ownerId",
+          attributes: ["id", "thumb"],
+          limit: 4,
         },
       ],
+      order: [["id", "DESC"]],
+      offset: getOffset(page, limit),
+      limit,
+      group: [
+        "User.id",
+        "followers->UserFollower.userId",
+        "followers->UserFollower.followerId",
+      ],
+      subQuery: false,
     }),
     UserFollower.count({ where: { followerId: userId } }),
   ]);
 
-  if (!user) {
-    throw HttpError(404, "User not found");
-  }
+  const recipes = await Recipe.findAll({
+    where: {
+      ownerId: { [Op.in]: following.map(({ id }) => id) },
+    },
+    attributes: ["ownerId", [getCountFuncByColumn("id"), "recipesCount"]],
+    group: ["ownerId"],
+    raw: true,
+  });
 
-  return { following: user.following, total };
+  return {
+    following: following.map((user) => {
+      const followingJSON = user.toJSON();
+      const recipesCount = recipes.find(
+        ({ ownerId }) => ownerId === followingJSON.id
+      )?.recipesCount;
+
+      return {
+        ...followingJSON,
+        recipesCount: recipesCount ? Number(recipesCount) : 0,
+      };
+    }),
+    total,
+  };
 };
 
 const followUser = async (userId, followId) => {
