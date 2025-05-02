@@ -2,7 +2,7 @@ import path from "node:path";
 
 import dotenv from "dotenv";
 
-dotenv.config({ path: path.resolve(".env") });
+dotenv.config({ path: path.join(process.cwd(), ".env") });
 
 export const settings = {
   dbPassword: process.env.POSTGRES_PASSWORD,

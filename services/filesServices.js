@@ -8,7 +8,7 @@ const fileCategories = {
   recipes: "recipes",
 };
 
-const staticDir = path.resolve("public");
+const staticDir = path.join(process.cwd(), "public");
 
 const removeFile = async (filePath, isFullPath) => {
   try {

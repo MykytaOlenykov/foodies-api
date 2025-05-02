@@ -15,7 +15,7 @@ import { sequelize, verifySequelizeConnection } from "./db/sequelize.js";
 import { settings } from "./settings.js";
 
 const app = express();
-const staticPath = path.resolve("public");
+const staticPath = path.join(process.cwd(), "public");
 
 app.use(morgan("tiny"));
 app.use(cors());

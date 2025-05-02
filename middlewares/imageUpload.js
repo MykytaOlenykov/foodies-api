@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import multer from "multer";
 import { HttpError } from "../helpers/HttpError.js";
 
-const tmpDir = path.resolve("temp");
+const tmpDir = path.join(process.cwd(), "temp");
 
 const mimetypeWhitelist = ["image/png", "image/jpeg", "image/jpg"];
 
