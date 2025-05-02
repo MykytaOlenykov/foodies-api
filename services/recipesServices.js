@@ -215,8 +215,9 @@ const getUserFavoriteRecipes = async (userId, settings) => {
         attributes: [],
         required: true,
       },
+      { model: User, as: "owner", attributes: ["id", "name"] },
     ],
-    attributes: ["id", "title", "thumb", "description"],
+    attributes: ["id", "title", "description", "createdAt", "updatedAt"],
     offset,
     limit,
   });
