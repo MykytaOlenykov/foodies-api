@@ -78,6 +78,10 @@ const getUserById = async (userId, currentUser) => {
 };
 
 const updateUserAvatar = async (userId, file) => {
+  if (!file) {
+    throw HttpError(400, "No file uploaded");
+  }
+
   const user = await User.findByPk(userId);
 
   if (!user) {

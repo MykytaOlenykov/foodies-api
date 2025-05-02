@@ -11,14 +11,8 @@ const getUserById = async (req, res) => {
   });
 };
 
-import { HttpError } from "../helpers/HttpError.js";
-
 const updateAvatar = async (req, res) => {
   const { id: userId } = req.user;
-
-  if (!req.file) {
-    throw HttpError(400, "No file uploaded");
-  }
 
   const { avatarURL } = await usersServices.updateUserAvatar(userId, req.file);
 
