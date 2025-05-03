@@ -3,6 +3,7 @@ import path from "node:path";
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
 
 import { areasRouter } from "./routes/areasRouter.js";
 import { authRouter } from "./routes/authRouter.js";
@@ -13,6 +14,7 @@ import { testimonialsRouter } from "./routes/testimonialsRouter.js";
 import { usersRouter } from "./routes/usersRouter.js";
 import { sequelize, verifySequelizeConnection } from "./db/sequelize.js";
 import { settings } from "./settings.js";
+import { swaggerOptions } from "./swagger.js";
 
 const app = express();
 const staticPath = path.join(process.cwd(), "public");
@@ -21,6 +23,8 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 app.use("/api/static", express.static(staticPath));
+
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerOptions));
 
 app.use("/api/areas", areasRouter);
 app.use("/api/auth", authRouter);
