@@ -10,9 +10,15 @@ import {
   loginResponseSwagger,
   currentResponseSwagger,
 } from "./schemas/authSchemas.js";
-import {} from "./schemas/categoriesSchemas.js";
+import {
+  getAllCategoriesQueryStringSwagger,
+  getAllCategoriesResponseSwagger,
+} from "./schemas/categoriesSchemas.js";
 import { errorResponseSwagger } from "./schemas/commonSchemas.js";
-import {} from "./schemas/ingredientsSchemas.js";
+import {
+  getAllIngredientsQueryStringSwagger,
+  getAllIngredientsResponseSwagger,
+} from "./schemas/ingredientsSchemas.js";
 import {} from "./schemas/recipesSchemas.js";
 import {} from "./schemas/testimonialSchema.js";
 import {} from "./schemas/usersSchemas.js";
@@ -118,6 +124,40 @@ export const swaggerOptions = {
         responses: {
           204: {},
           401: errorResponseOptions,
+        },
+      },
+    },
+    "/api/categories": {
+      get: {
+        tags: ["Categories"],
+        parameters: formatSwaggerQuerystringSchema(
+          getAllCategoriesQueryStringSwagger
+        ),
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: getAllCategoriesResponseSwagger,
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/ingredients": {
+      get: {
+        tags: ["Ingredients"],
+        parameters: formatSwaggerQuerystringSchema(
+          getAllIngredientsQueryStringSwagger
+        ),
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: getAllIngredientsResponseSwagger,
+              },
+            },
+          },
         },
       },
     },
