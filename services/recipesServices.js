@@ -105,7 +105,7 @@ const getRecipeById = async (recipeId) => {
       {
         model: Ingredient,
         as: "ingredients",
-        attributes: ["id", "name"],
+        attributes: ["id", "name", "imgURL"],
         through: {
           as: "recipeIngredient",
           attributes: ["measure"],

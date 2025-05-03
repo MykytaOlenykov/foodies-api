@@ -6,6 +6,8 @@ export const paginationSchema = Joi.object({
   limit: Joi.number().integer().min(1).max(100).default(10),
 });
 
+export const { swagger: paginationSwagger } = j2s(paginationSchema);
+
 const errorResponseSchema = Joi.object({
   message: Joi.string(),
 });

@@ -14,12 +14,24 @@ import {
   getAllCategoriesQueryStringSwagger,
   getAllCategoriesResponseSwagger,
 } from "./schemas/categoriesSchemas.js";
-import { errorResponseSwagger } from "./schemas/commonSchemas.js";
+import {
+  paginationSwagger,
+  errorResponseSwagger,
+} from "./schemas/commonSchemas.js";
 import {
   getAllIngredientsQueryStringSwagger,
   getAllIngredientsResponseSwagger,
 } from "./schemas/ingredientsSchemas.js";
-import {} from "./schemas/recipesSchemas.js";
+import {
+  getRecipesQueryStringSwagger,
+  getRecipesResponseSwagger,
+  createRecipeBodySwagger,
+  createRecipeResponseSwagger,
+  getRecipeByIdResponseSwagger,
+  getPopularRecipesResponseSwagger,
+  getFavoriteRecipesResponseSwagger,
+  addFavoriteRecipeResponseSwagger,
+} from "./schemas/recipesSchemas.js";
 import {} from "./schemas/testimonialSchema.js";
 import {} from "./schemas/usersSchemas.js";
 
@@ -74,6 +86,7 @@ export const swaggerOptions = {
               },
             },
           },
+          400: errorResponseOptions,
           409: errorResponseOptions,
         },
       },
@@ -97,6 +110,7 @@ export const swaggerOptions = {
               },
             },
           },
+          400: errorResponseOptions,
           401: errorResponseOptions,
         },
       },
@@ -122,7 +136,9 @@ export const swaggerOptions = {
         tags: ["Auth"],
         security: [{ BearerAuth: [] }],
         responses: {
-          204: {},
+          204: {
+            content: {},
+          },
           401: errorResponseOptions,
         },
       },
@@ -158,6 +174,151 @@ export const swaggerOptions = {
               },
             },
           },
+        },
+      },
+    },
+    "/api/recipes": {
+      get: {
+        tags: ["Recipes"],
+        parameters: formatSwaggerQuerystringSchema(
+          getRecipesQueryStringSwagger
+        ),
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: getRecipesResponseSwagger,
+              },
+            },
+          },
+        },
+      },
+      post: {
+        tags: ["Recipes"],
+        security: [{ BearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                ...createRecipeBodySwagger,
+                properties: {
+                  ...createRecipeBodySwagger.properties,
+                  thumb: {
+                    type: "string",
+                    format: "binary",
+                    description: "The file to upload",
+                  },
+                },
+                required: [...createRecipeBodySwagger.required, "thumb"],
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: createRecipeResponseSwagger,
+              },
+            },
+          },
+          400: errorResponseOptions,
+          401: errorResponseOptions,
+        },
+      },
+    },
+    "/api/recipes/:recipeId": {
+      get: {
+        tags: ["Recipes"],
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: getRecipeByIdResponseSwagger,
+              },
+            },
+          },
+          400: errorResponseOptions,
+          404: errorResponseOptions,
+        },
+      },
+      delete: {
+        tags: ["Recipes"],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          204: {
+            content: {},
+          },
+          400: errorResponseOptions,
+          401: errorResponseOptions,
+          404: errorResponseOptions,
+        },
+      },
+    },
+    "/api/recipes/popular": {
+      get: {
+        tags: ["Recipes"],
+        parameters: formatSwaggerQuerystringSchema(paginationSwagger),
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: getPopularRecipesResponseSwagger,
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/recipes/favorites": {
+      get: {
+        tags: ["Recipes"],
+        security: [{ BearerAuth: [] }],
+        parameters: formatSwaggerQuerystringSchema(paginationSwagger),
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: getFavoriteRecipesResponseSwagger,
+              },
+            },
+          },
+          401: errorResponseOptions,
+        },
+      },
+    },
+    "/api/recipes/favorites/:recipeId": {
+      post: {
+        tags: ["Recipes"],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: addFavoriteRecipeResponseSwagger,
+              },
+            },
+          },
+          400: errorResponseOptions,
+          401: errorResponseOptions,
+          404: errorResponseOptions,
+        },
+      },
+      delete: {
+        tags: ["Recipes"],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: addFavoriteRecipeResponseSwagger,
+              },
+            },
+          },
+          400: errorResponseOptions,
+          401: errorResponseOptions,
+          404: errorResponseOptions,
         },
       },
     },
