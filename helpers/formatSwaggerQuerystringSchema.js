@@ -1,4 +1,4 @@
-export const formatSwaggerQuerystringSchema = (swaggerQuerySchema) => {
+export const formatSwaggerQueryStringSchema = (swaggerQuerySchema) => {
   return Object.entries(swaggerQuerySchema.properties).map(([key, value]) => ({
     name: key,
     in: "query",

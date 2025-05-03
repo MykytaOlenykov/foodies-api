@@ -1,4 +1,4 @@
-import { formatSwaggerQuerystringSchema } from "./helpers/formatSwaggerQuerystringSchema.js";
+import { formatSwaggerQueryStringSchema } from "./helpers/formatSwaggerQueryStringSchema.js";
 import {
   getAllAreasQueryStringSwagger,
   getAllAreasResponseSwagger,
@@ -53,7 +53,7 @@ export const swaggerOptions = {
     "/api/areas": {
       get: {
         tags: ["Areas"],
-        parameters: formatSwaggerQuerystringSchema(
+        parameters: formatSwaggerQueryStringSchema(
           getAllAreasQueryStringSwagger
         ),
         responses: {
@@ -146,7 +146,7 @@ export const swaggerOptions = {
     "/api/categories": {
       get: {
         tags: ["Categories"],
-        parameters: formatSwaggerQuerystringSchema(
+        parameters: formatSwaggerQueryStringSchema(
           getAllCategoriesQueryStringSwagger
         ),
         responses: {
@@ -163,7 +163,7 @@ export const swaggerOptions = {
     "/api/ingredients": {
       get: {
         tags: ["Ingredients"],
-        parameters: formatSwaggerQuerystringSchema(
+        parameters: formatSwaggerQueryStringSchema(
           getAllIngredientsQueryStringSwagger
         ),
         responses: {
@@ -180,7 +180,7 @@ export const swaggerOptions = {
     "/api/recipes": {
       get: {
         tags: ["Recipes"],
-        parameters: formatSwaggerQuerystringSchema(
+        parameters: formatSwaggerQueryStringSchema(
           getRecipesQueryStringSwagger
         ),
         responses: {
@@ -259,7 +259,7 @@ export const swaggerOptions = {
     "/api/recipes/popular": {
       get: {
         tags: ["Recipes"],
-        parameters: formatSwaggerQuerystringSchema(paginationSwagger),
+        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
         responses: {
           200: {
             content: {
@@ -275,7 +275,7 @@ export const swaggerOptions = {
       get: {
         tags: ["Recipes"],
         security: [{ BearerAuth: [] }],
-        parameters: formatSwaggerQuerystringSchema(paginationSwagger),
+        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
         responses: {
           200: {
             content: {
