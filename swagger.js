@@ -184,6 +184,7 @@ export const swaggerOptions = {
     "/api/recipes": {
       get: {
         tags: ["Recipes"],
+        security: [{ BearerAuth: [] }],
         parameters: formatSwaggerQuerySchema(getRecipesQueryStringSwagger),
         responses: {
           200: {

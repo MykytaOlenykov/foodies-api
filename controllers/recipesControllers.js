@@ -2,7 +2,10 @@ import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 import { recipesServices } from "../services/recipesServices.js";
 
 const getRecipes = async (req, res) => {
-  const { total, recipes } = await recipesServices.getRecipes(req.query);
+  const { total, recipes } = await recipesServices.getRecipes(
+    req.query,
+    req.user
+  );
   res.status(200).json({ data: { total, recipes } });
 };
 

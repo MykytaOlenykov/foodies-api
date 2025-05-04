@@ -129,7 +129,11 @@ const recipeSchema = Joi.object({
 const getRecipesResponseSchema = Joi.object({
   data: Joi.object({
     total: Joi.number().example(10),
-    recipes: Joi.array().items(recipeSchema),
+    recipes: Joi.array().items(
+      recipeSchema.keys({
+        isFavorite: Joi.boolean(),
+      })
+    ),
   }),
 });
 

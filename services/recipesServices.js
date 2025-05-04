@@ -28,14 +28,10 @@ import { filesServices } from "./filesServices.js";
  *
  * @returns {Object} Result with array of recipes, number of pages, and current page
  */
-const getRecipes = async ({
-  categoryId,
-  areaId,
-  ingredientId,
-  ownerId,
-  page = 1,
-  limit = 10,
-}) => {
+const getRecipes = async (
+  { categoryId, areaId, ingredientId, ownerId, page = 1, limit = 10 },
+  user = null
+) => {
   const where = {};
   const include = [
     { model: User, as: "owner", attributes: ["id", "name", "avatarURL"] },
@@ -56,6 +52,16 @@ const getRecipes = async ({
     });
   }
 
+  if (user && user.id) {
+    include.push({
+      model: UserFavoriteRecipe,
+      as: "userFavoriteRecipes",
+      where: { userId: user.id },
+      attributes: ["userId"],
+      required: false,
+    });
+  }
+
   const { rows, count } = await Recipe.findAndCountAll({
     where,
     attributes: [
@@ -73,7 +79,18 @@ const getRecipes = async ({
     distinct: true,
   });
 
-  return { total: count, recipes: rows };
+  const recipes = rows.map((recipe) => {
+    const { userFavoriteRecipes, ...otherData } = recipe.toJSON();
+
+    return recipe.userFavoriteRecipes
+      ? {
+          ...otherData,
+          isFavorite: recipe.userFavoriteRecipes.length > 0,
+        }
+      : otherData;
+  });
+
+  return { total: count, recipes };
 };
 
 /**
