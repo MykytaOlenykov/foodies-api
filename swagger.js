@@ -40,6 +40,7 @@ import {
   getUserByIdResponseSwagger,
   updateAvatarResponseSwagger,
 } from "./schemas/usersSchemas.js";
+import { settings } from "./settings.js";
 
 const errorResponseOptions = {
   content: {
@@ -55,6 +56,7 @@ export const swaggerOptions = {
     title: "Foodies API",
     version: "1.0.0",
   },
+  servers: [{ url: settings.apiURL }],
   paths: {
     "/api/areas": {
       get: {

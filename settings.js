@@ -15,6 +15,8 @@ export const settings = {
   tokenSecret: process.env.TOKEN_SECRET,
 
   port: process.env.PORT,
+
+  apiURL: process.env.API_URL,
 };
 
 const validateSettings = () => {
