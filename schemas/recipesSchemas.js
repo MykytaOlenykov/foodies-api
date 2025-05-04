@@ -121,6 +121,7 @@ const recipeSchema = Joi.object({
   owner: Joi.object({
     id: Joi.number().example(1),
     name: Joi.string(),
+    avatarURL: Joi.string(),
   }),
 });
 

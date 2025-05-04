@@ -37,7 +37,9 @@ const getRecipes = async ({
   limit = 10,
 }) => {
   const where = {};
-  const include = [{ model: User, as: "owner", attributes: ["id", "name"] }];
+  const include = [
+    { model: User, as: "owner", attributes: ["id", "name", "avatarURL"] },
+  ];
 
   if (areaId) where.areaId = areaId;
   if (categoryId) where.categoryId = categoryId;
@@ -164,7 +166,7 @@ const getPopularRecipes = async ({ page = 1, limit = 10 }) => {
         {
           model: User,
           as: "owner",
-          attributes: ["id", "name"],
+          attributes: ["id", "name", "avatarURL"],
         },
       ],
       group: ["Recipe.id", "owner.id"],
@@ -223,7 +225,7 @@ const getUserFavoriteRecipes = async (userId, settings) => {
         attributes: [],
         required: true,
       },
-      { model: User, as: "owner", attributes: ["id", "name"] },
+      { model: User, as: "owner", attributes: ["id", "name", "avatarURL"] },
     ],
     attributes: [
       "id",
