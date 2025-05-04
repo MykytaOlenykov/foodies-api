@@ -52,6 +52,7 @@ usersRouter.delete(
 
 usersRouter.get(
   "/:userId/followers",
+  authenticate,
   validateParams(getFollowersParamsSchema),
   validateQueryString(paginationSchema),
   usersControllers.getFollowers

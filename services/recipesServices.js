@@ -92,7 +92,7 @@ const getRecipeById = async (recipeId) => {
       {
         model: User,
         as: "owner",
-        attributes: ["id", "name"],
+        attributes: ["id", "name", "avatarURL"],
       },
       {
         model: Area,
