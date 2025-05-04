@@ -1,4 +1,4 @@
-import { formatSwaggerQueryStringSchema } from "./helpers/formatSwaggerQueryStringSchema.js";
+import { formatSwaggerQuerySchema } from "./helpers/formatSwaggerQuerySchema.js";
 import {
   getAllAreasQueryStringSwagger,
   getAllAreasResponseSwagger,
@@ -59,9 +59,7 @@ export const swaggerOptions = {
     "/api/areas": {
       get: {
         tags: ["Areas"],
-        parameters: formatSwaggerQueryStringSchema(
-          getAllAreasQueryStringSwagger
-        ),
+        parameters: formatSwaggerQuerySchema(getAllAreasQueryStringSwagger),
         responses: {
           200: {
             content: {
@@ -152,7 +150,7 @@ export const swaggerOptions = {
     "/api/categories": {
       get: {
         tags: ["Categories"],
-        parameters: formatSwaggerQueryStringSchema(
+        parameters: formatSwaggerQuerySchema(
           getAllCategoriesQueryStringSwagger
         ),
         responses: {
@@ -169,7 +167,7 @@ export const swaggerOptions = {
     "/api/ingredients": {
       get: {
         tags: ["Ingredients"],
-        parameters: formatSwaggerQueryStringSchema(
+        parameters: formatSwaggerQuerySchema(
           getAllIngredientsQueryStringSwagger
         ),
         responses: {
@@ -186,9 +184,7 @@ export const swaggerOptions = {
     "/api/recipes": {
       get: {
         tags: ["Recipes"],
-        parameters: formatSwaggerQueryStringSchema(
-          getRecipesQueryStringSwagger
-        ),
+        parameters: formatSwaggerQuerySchema(getRecipesQueryStringSwagger),
         responses: {
           200: {
             content: {
@@ -265,7 +261,7 @@ export const swaggerOptions = {
     "/api/recipes/popular": {
       get: {
         tags: ["Recipes"],
-        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
+        parameters: formatSwaggerQuerySchema(paginationSwagger),
         responses: {
           200: {
             content: {
@@ -281,7 +277,7 @@ export const swaggerOptions = {
       get: {
         tags: ["Recipes"],
         security: [{ BearerAuth: [] }],
-        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
+        parameters: formatSwaggerQuerySchema(paginationSwagger),
         responses: {
           200: {
             content: {
@@ -331,7 +327,7 @@ export const swaggerOptions = {
     "/api/testimonials": {
       get: {
         tags: ["Testimonials"],
-        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
+        parameters: formatSwaggerQuerySchema(paginationSwagger),
         responses: {
           200: {
             content: {
@@ -401,7 +397,7 @@ export const swaggerOptions = {
       get: {
         tags: ["Users"],
         security: [{ BearerAuth: [] }],
-        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
+        parameters: formatSwaggerQuerySchema(paginationSwagger),
         responses: {
           200: {
             content: {
@@ -419,7 +415,7 @@ export const swaggerOptions = {
       get: {
         tags: ["Users"],
         security: [{ BearerAuth: [] }],
-        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
+        parameters: formatSwaggerQuerySchema(paginationSwagger),
         responses: {
           200: {
             content: {
