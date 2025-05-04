@@ -131,7 +131,7 @@ const getRecipesResponseSchema = Joi.object({
     total: Joi.number().example(10),
     recipes: Joi.array().items(
       recipeSchema.keys({
-        isFavorite: Joi.boolean(),
+        isFavorite: Joi.boolean().optional(),
       })
     ),
   }),
