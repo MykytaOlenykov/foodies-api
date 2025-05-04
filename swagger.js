@@ -33,7 +33,7 @@ import {
   addFavoriteRecipeResponseSwagger,
 } from "./schemas/recipesSchemas.js";
 import { getAllTestimonialsResponseSwagger } from "./schemas/testimonialSchema.js";
-import {} from "./schemas/usersSchemas.js";
+import { updateAvatarResponseSwagger } from "./schemas/usersSchemas.js";
 
 const errorResponseOptions = {
   content: {
@@ -79,7 +79,7 @@ export const swaggerOptions = {
           },
         },
         responses: {
-          200: {
+          201: {
             content: {
               "application/json": {
                 schema: registerResponseSwagger,
@@ -216,7 +216,7 @@ export const swaggerOptions = {
           },
         },
         responses: {
-          200: {
+          201: {
             content: {
               "application/json": {
                 schema: createRecipeResponseSwagger,
@@ -334,6 +334,42 @@ export const swaggerOptions = {
               },
             },
           },
+        },
+      },
+    },
+    "/api/users/avatars": {
+      patch: {
+        tags: ["Users"],
+        security: [{ BearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                properties: {
+                  avatar: {
+                    type: "string",
+                    format: "binary",
+                    description: "The file to upload",
+                  },
+                },
+                required: ["avatar"],
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: updateAvatarResponseSwagger,
+              },
+            },
+          },
+          400: errorResponseOptions,
+          401: errorResponseOptions,
+          404: errorResponseOptions,
         },
       },
     },
