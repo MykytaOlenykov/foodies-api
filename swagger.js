@@ -32,7 +32,7 @@ import {
   getFavoriteRecipesResponseSwagger,
   addFavoriteRecipeResponseSwagger,
 } from "./schemas/recipesSchemas.js";
-import {} from "./schemas/testimonialSchema.js";
+import { getAllTestimonialsResponseSwagger } from "./schemas/testimonialSchema.js";
 import {} from "./schemas/usersSchemas.js";
 
 const errorResponseOptions = {
@@ -319,6 +319,21 @@ export const swaggerOptions = {
           400: errorResponseOptions,
           401: errorResponseOptions,
           404: errorResponseOptions,
+        },
+      },
+    },
+    "/api/testimonials": {
+      get: {
+        tags: ["Testimonials"],
+        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: getAllTestimonialsResponseSwagger,
+              },
+            },
+          },
         },
       },
     },
