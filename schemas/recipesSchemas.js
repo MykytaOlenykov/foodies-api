@@ -25,6 +25,7 @@ const getRecipeByIdResponseSchema = Joi.object({
       owner: Joi.object({
         id: Joi.number().example(1),
         name: Joi.string(),
+        avatarURL: Joi.string(),
       }),
       area: Joi.object({
         id: Joi.number().example(1),
@@ -121,6 +122,7 @@ const recipeSchema = Joi.object({
   owner: Joi.object({
     id: Joi.number().example(1),
     name: Joi.string(),
+    avatarURL: Joi.string(),
   }),
 });
 

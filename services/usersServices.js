@@ -111,7 +111,7 @@ const getUserConnections = async (type, userId, query) => {
 
   const [users, total] = await Promise.all([
     User.findAll({
-      attributes: ["id", "name", "email", "avatarURL"],
+      attributes: ["id", "name", "avatarURL"],
       include: [
         {
           model: User,

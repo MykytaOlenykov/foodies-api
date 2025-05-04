@@ -1,4 +1,4 @@
-import { formatSwaggerQuerystringSchema } from "./helpers/formatSwaggerQuerystringSchema.js";
+import { formatSwaggerQueryStringSchema } from "./helpers/formatSwaggerQueryStringSchema.js";
 import {
   getAllAreasQueryStringSwagger,
   getAllAreasResponseSwagger,
@@ -32,8 +32,14 @@ import {
   getFavoriteRecipesResponseSwagger,
   addFavoriteRecipeResponseSwagger,
 } from "./schemas/recipesSchemas.js";
-import {} from "./schemas/testimonialSchema.js";
-import {} from "./schemas/usersSchemas.js";
+import { getAllTestimonialsResponseSwagger } from "./schemas/testimonialSchema.js";
+import {
+  followToUserResponseSwagger,
+  gatFollowersResponseSwagger,
+  gatFollowingResponseSwagger,
+  getUserByIdResponseSwagger,
+  updateAvatarResponseSwagger,
+} from "./schemas/usersSchemas.js";
 
 const errorResponseOptions = {
   content: {
@@ -53,7 +59,7 @@ export const swaggerOptions = {
     "/api/areas": {
       get: {
         tags: ["Areas"],
-        parameters: formatSwaggerQuerystringSchema(
+        parameters: formatSwaggerQueryStringSchema(
           getAllAreasQueryStringSwagger
         ),
         responses: {
@@ -79,7 +85,7 @@ export const swaggerOptions = {
           },
         },
         responses: {
-          200: {
+          201: {
             content: {
               "application/json": {
                 schema: registerResponseSwagger,
@@ -146,7 +152,7 @@ export const swaggerOptions = {
     "/api/categories": {
       get: {
         tags: ["Categories"],
-        parameters: formatSwaggerQuerystringSchema(
+        parameters: formatSwaggerQueryStringSchema(
           getAllCategoriesQueryStringSwagger
         ),
         responses: {
@@ -163,7 +169,7 @@ export const swaggerOptions = {
     "/api/ingredients": {
       get: {
         tags: ["Ingredients"],
-        parameters: formatSwaggerQuerystringSchema(
+        parameters: formatSwaggerQueryStringSchema(
           getAllIngredientsQueryStringSwagger
         ),
         responses: {
@@ -180,7 +186,7 @@ export const swaggerOptions = {
     "/api/recipes": {
       get: {
         tags: ["Recipes"],
-        parameters: formatSwaggerQuerystringSchema(
+        parameters: formatSwaggerQueryStringSchema(
           getRecipesQueryStringSwagger
         ),
         responses: {
@@ -216,7 +222,7 @@ export const swaggerOptions = {
           },
         },
         responses: {
-          200: {
+          201: {
             content: {
               "application/json": {
                 schema: createRecipeResponseSwagger,
@@ -259,7 +265,7 @@ export const swaggerOptions = {
     "/api/recipes/popular": {
       get: {
         tags: ["Recipes"],
-        parameters: formatSwaggerQuerystringSchema(paginationSwagger),
+        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
         responses: {
           200: {
             content: {
@@ -275,7 +281,7 @@ export const swaggerOptions = {
       get: {
         tags: ["Recipes"],
         security: [{ BearerAuth: [] }],
-        parameters: formatSwaggerQuerystringSchema(paginationSwagger),
+        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
         responses: {
           200: {
             content: {
@@ -313,6 +319,145 @@ export const swaggerOptions = {
             content: {
               "application/json": {
                 schema: addFavoriteRecipeResponseSwagger,
+              },
+            },
+          },
+          400: errorResponseOptions,
+          401: errorResponseOptions,
+          404: errorResponseOptions,
+        },
+      },
+    },
+    "/api/testimonials": {
+      get: {
+        tags: ["Testimonials"],
+        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: getAllTestimonialsResponseSwagger,
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/users/avatars": {
+      patch: {
+        tags: ["Users"],
+        security: [{ BearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                properties: {
+                  avatar: {
+                    type: "string",
+                    format: "binary",
+                    description: "The file to upload",
+                  },
+                },
+                required: ["avatar"],
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: updateAvatarResponseSwagger,
+              },
+            },
+          },
+          400: errorResponseOptions,
+          401: errorResponseOptions,
+          404: errorResponseOptions,
+        },
+      },
+    },
+    "/api/users/:userId": {
+      get: {
+        tags: ["Users"],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: getUserByIdResponseSwagger,
+              },
+            },
+          },
+          400: errorResponseOptions,
+          401: errorResponseOptions,
+          404: errorResponseOptions,
+        },
+      },
+    },
+    "/api/users/:userId/followers": {
+      get: {
+        tags: ["Users"],
+        security: [{ BearerAuth: [] }],
+        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: gatFollowersResponseSwagger,
+              },
+            },
+          },
+          400: errorResponseOptions,
+          401: errorResponseOptions,
+        },
+      },
+    },
+    "/api/users/following": {
+      get: {
+        tags: ["Users"],
+        security: [{ BearerAuth: [] }],
+        parameters: formatSwaggerQueryStringSchema(paginationSwagger),
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: gatFollowingResponseSwagger,
+              },
+            },
+          },
+          400: errorResponseOptions,
+          401: errorResponseOptions,
+        },
+      },
+    },
+    "/api/users/following/:userId": {
+      post: {
+        tags: ["Users"],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: followToUserResponseSwagger,
+              },
+            },
+          },
+          400: errorResponseOptions,
+          401: errorResponseOptions,
+          404: errorResponseOptions,
+        },
+      },
+      delete: {
+        tags: ["Users"],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: {
+            content: {
+              "application/json": {
+                schema: followToUserResponseSwagger,
               },
             },
           },
