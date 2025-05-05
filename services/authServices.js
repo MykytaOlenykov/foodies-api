@@ -21,11 +21,11 @@ const register = async (body) => {
   });
 
   const payload = {
-    id: user.id,
+    id: newUser.id,
   };
 
   const token = jwt.sign(payload, { expiresIn: "9h" });
-  user.token = token;
+  newUser.token = token;
 
   await newUser.save();
 
@@ -35,7 +35,7 @@ const register = async (body) => {
       id: newUser.id,
       name: newUser.name,
       email: newUser.email,
-      avatarURL: user.avatarURL,
+      avatarURL: newUser.avatarURL,
     },
   };
 };
