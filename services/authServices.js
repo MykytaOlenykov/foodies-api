@@ -20,7 +20,24 @@ const register = async (body) => {
     password: hashPassword,
   });
 
-  return { id: newUser.id, name: newUser.name, email: newUser.email };
+  const payload = {
+    id: user.id,
+  };
+
+  const token = jwt.sign(payload, { expiresIn: "9h" });
+  user.token = token;
+
+  await newUser.save();
+
+  return {
+    token,
+    user: {
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      avatarURL: user.avatarURL,
+    },
+  };
 };
 
 const login = async (body) => {

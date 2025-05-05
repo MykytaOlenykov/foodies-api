@@ -2,9 +2,9 @@ import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 import { authServices } from "../services/authServices.js";
 
 const register = async (req, res) => {
-  const user = await authServices.register(req.body);
+  const { token, user } = await authServices.register(req.body);
 
-  res.status(201).json({ data: { user } });
+  res.status(201).json({ data: { token, user } });
 };
 
 const login = async (req, res) => {

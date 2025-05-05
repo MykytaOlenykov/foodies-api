@@ -30,24 +30,21 @@ export const loginSchema = Joi.object({
 
 export const { swagger: loginSwagger } = j2s(loginSchema);
 
-const registerResponseSchema = Joi.object({
-  data: Joi.object({
-    user: Joi.object({
-      id: Joi.number().example(1),
-      name: Joi.string(),
-      email: Joi.string().example(exampleEmail),
-    }),
-  }),
-});
-
-export const { swagger: registerResponseSwagger } = j2s(registerResponseSchema);
-
 const userResponseSchema = Joi.object({
   id: Joi.number().example(1),
   name: Joi.string(),
   email: Joi.string().example(exampleEmail),
   avatarURL: Joi.string().optional(),
 });
+
+const registerResponseSchema = Joi.object({
+  data: Joi.object({
+    token: Joi.string(),
+    user: userResponseSchema,
+  }),
+});
+
+export const { swagger: registerResponseSwagger } = j2s(registerResponseSchema);
 
 const loginResponseSchema = Joi.object({
   data: Joi.object({
