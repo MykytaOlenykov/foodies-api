@@ -36,32 +36,37 @@ const getUserById = async (userId, currentUser) => {
       ]
     : [];
 
-  const userInstance = await User.findByPk(userId, {
-    include: [
-      {
-        model: Recipe,
-        as: "recipes",
-        attributes: [],
-      },
-      {
-        model: User,
-        as: "followers",
-        through: { attributes: [] },
-        attributes: [],
-      },
-      ...privateInclude,
-    ],
-    attributes: [
-      "id",
-      "name",
-      "email",
-      "avatarURL",
-      [getCountFuncByColumn("recipes.id"), "recipesCount"],
-      [getCountFuncByColumn("followers.id"), "followersCount"],
-      ...privateAttributes,
-    ],
-    group: ["User.id"],
-  });
+  const [userInstance, follow] = await Promise.all([
+    User.findByPk(userId, {
+      include: [
+        {
+          model: Recipe,
+          as: "recipes",
+          attributes: [],
+        },
+        {
+          model: User,
+          as: "followers",
+          through: { attributes: [] },
+          attributes: [],
+        },
+        ...privateInclude,
+      ],
+      attributes: [
+        "id",
+        "name",
+        "email",
+        "avatarURL",
+        [getCountFuncByColumn("recipes.id"), "recipesCount"],
+        [getCountFuncByColumn("followers.id"), "followersCount"],
+        ...privateAttributes,
+      ],
+      group: ["User.id"],
+    }),
+    isOwnProfile
+      ? Promise.resolve(null)
+      : UserFollower.findOne({ where: { userId, followerId: currentUser.id } }),
+  ]);
 
   if (!userInstance) throw HttpError(404, "User not found");
 
@@ -77,6 +82,7 @@ const getUserById = async (userId, currentUser) => {
     followingCount: userJson.followingCount
       ? Number(userJson.followingCount)
       : undefined,
+    isFollowed: isOwnProfile ? undefined : !!follow,
   };
 };
 
