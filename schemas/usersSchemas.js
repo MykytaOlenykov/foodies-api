@@ -16,6 +16,7 @@ const getUserByIdResponseSchema = Joi.object({
       followersCount: Joi.number(),
       favoriteRecipesCount: Joi.number().optional(),
       followingCount: Joi.number().optional(),
+      isFollowed: Joi.boolean().optional(),
     }),
   }),
 });
