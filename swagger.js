@@ -233,7 +233,7 @@ export const swaggerOptions = {
         },
       },
     },
-    "/api/recipes/:recipeId": {
+    "/api/recipes/{recipeId}": {
       get: {
         tags: ["Recipes"],
         responses: {
@@ -293,7 +293,7 @@ export const swaggerOptions = {
         },
       },
     },
-    "/api/recipes/favorites/:recipeId": {
+    "/api/recipes/favorites/{recipeId}": {
       post: {
         tags: ["Recipes"],
         security: [{ BearerAuth: [] }],
@@ -378,7 +378,7 @@ export const swaggerOptions = {
         },
       },
     },
-    "/api/users/:userId": {
+    "/api/users/{userId}": {
       get: {
         tags: ["Users"],
         security: [{ BearerAuth: [] }],
@@ -396,7 +396,7 @@ export const swaggerOptions = {
         },
       },
     },
-    "/api/users/:userId/followers": {
+    "/api/users/{userId}/followers": {
       get: {
         tags: ["Users"],
         security: [{ BearerAuth: [] }],
@@ -432,7 +432,7 @@ export const swaggerOptions = {
         },
       },
     },
-    "/api/users/following/:userId": {
+    "/api/users/following/{userId}": {
       post: {
         tags: ["Users"],
         security: [{ BearerAuth: [] }],
