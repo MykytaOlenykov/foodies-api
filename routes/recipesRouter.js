@@ -48,6 +48,7 @@ recipesRouter.get(
 
 recipesRouter.get(
   "/:recipeId",
+  identifyUser,
   validateParams(getRecipeByIdParamsSchema),
   recipesControllers.getRecipeById
 );

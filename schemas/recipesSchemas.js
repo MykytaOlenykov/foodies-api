@@ -22,6 +22,7 @@ const getRecipeByIdResponseSchema = Joi.object({
       time: Joi.number().example(60),
       createdAt: Joi.date(),
       updatedAt: Joi.date(),
+      isFavorite: Joi.boolean().optional(),
       owner: Joi.object({
         id: Joi.number().example(1),
         name: Joi.string(),

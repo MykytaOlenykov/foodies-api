@@ -100,7 +100,7 @@ const getRecipes = async (
  * @param {number} recipeId
  * @returns {Object|null} The recipe found or null
  */
-const getRecipeById = async (recipeId) => {
+const getRecipeById = async (recipeId, user) => {
   const recipe = await Recipe.findByPk(recipeId, {
     attributes: {
       exclude: ["ownerId", "areaId", "categoryId"],
@@ -135,10 +135,17 @@ const getRecipeById = async (recipeId) => {
 
   if (!recipe) throw HttpError(404, "Not found");
 
+  const favorite = await (user
+    ? UserFavoriteRecipe.findOne({
+        where: { userId: user?.id, recipeId: recipe.id },
+      })
+    : Promise.resolve(null));
+
   const recipeJSON = recipe.toJSON();
 
   return {
     ...recipeJSON,
+    isFavorite: user ? !!favorite : undefined,
     ingredients: recipeJSON.ingredients.map(
       ({ recipeIngredient, ...otherData }) => ({
         ...otherData,

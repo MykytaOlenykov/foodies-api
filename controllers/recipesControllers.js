@@ -11,7 +11,7 @@ const getRecipes = async (req, res) => {
 
 const getRecipeById = async (req, res) => {
   const { recipeId } = req.params;
-  const recipe = await recipesServices.getRecipeById(recipeId);
+  const recipe = await recipesServices.getRecipeById(recipeId, req.user);
   res.status(200).json({ data: { recipe } });
 };
 
