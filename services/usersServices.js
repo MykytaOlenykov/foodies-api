@@ -108,7 +108,7 @@ const updateUserAvatar = async (userId, file) => {
   return user;
 };
 
-const getUserConnections = async (type, userId, query) => {
+const getUserConnections = async ({ type, userId, query, currentUser }) => {
   const { page = 1, limit = 10 } = query;
 
   const isFollowers = type === "followers";
@@ -132,6 +132,20 @@ const getUserConnections = async (type, userId, query) => {
           attributes: ["id", "thumb"],
           limit: 4,
         },
+        ...(isFollowers
+          ? [
+              {
+                model: User,
+                as: "followers",
+                attributes: ["id"],
+                through: {
+                  where: { followerId: currentUser.id },
+                  attributes: [],
+                },
+                required: false,
+              },
+            ]
+          : []),
       ],
       order: [["id", "DESC"]],
       offset: getOffset(page, limit),
@@ -140,6 +154,7 @@ const getUserConnections = async (type, userId, query) => {
         "User.id",
         `${includeAlias}->UserFollower.userId`,
         `${includeAlias}->UserFollower.followerId`,
+        ...(isFollowers ? ["followers.id"] : []),
       ],
       subQuery: false,
     }),
@@ -159,7 +174,8 @@ const getUserConnections = async (type, userId, query) => {
 
   return {
     [key]: users.map((user) => {
-      const userJSON = user.toJSON();
+      const { followers, ...userJSON } = user.toJSON();
+
       const recipesCount = recipes.find(
         ({ ownerId }) => ownerId === userJSON.id
       )?.recipesCount;
@@ -167,18 +183,29 @@ const getUserConnections = async (type, userId, query) => {
       return {
         ...userJSON,
         recipesCount: recipesCount ? Number(recipesCount) : 0,
+        isFollowed: isFollowers ? followers?.length > 0 : undefined,
       };
     }),
     total,
   };
 };
 
-const getFollowers = async (userId, query) => {
-  return await getUserConnections("followers", userId, query);
+const getFollowers = async (userId, query, currentUser) => {
+  return await getUserConnections({
+    type: "followers",
+    userId,
+    query,
+    currentUser,
+  });
 };
 
-const getFollowing = async (userId, query) => {
-  return await getUserConnections("following", userId, query);
+const getFollowing = async (userId, query, currentUser) => {
+  return await getUserConnections({
+    type: "following",
+    userId,
+    query,
+    currentUser,
+  });
 };
 
 const followUser = async (userId, followId) => {

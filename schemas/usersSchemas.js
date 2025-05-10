@@ -63,7 +63,9 @@ const userResponseSchema = Joi.object({
 const gatFollowersResponseSchema = Joi.object({
   data: Joi.object({
     total: Joi.number().example(10),
-    followers: Joi.array().items(userResponseSchema),
+    followers: Joi.array().items(
+      userResponseSchema.keys({ isFollowed: Joi.boolean() })
+    ),
   }),
 });
 

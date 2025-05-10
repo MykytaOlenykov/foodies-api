@@ -24,7 +24,8 @@ const getFollowers = async (req, res) => {
 
   const { followers, total } = await usersServices.getFollowers(
     userId,
-    req.query
+    req.query,
+    req.user
   );
 
   res.status(200).json({ data: { followers, total } });
@@ -35,7 +36,8 @@ const getFollowing = async (req, res) => {
 
   const { following, total } = await usersServices.getFollowing(
     userId,
-    req.query
+    req.query,
+    req.user
   );
 
   res.status(200).json({ data: { following, total } });
